@@ -4,7 +4,9 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -159,11 +161,10 @@ public class BasketSide extends LinearOpMode {
     public class InWristLeft implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            if (inwrist.getPosition() > 0){
-                inwrist.setPosition(inwristpos - 0.1);
-                sleep(75);
-                inwristpos = inwristpos - 0.1;
-            }
+
+                inwrist.setPosition(0);
+
+
             return false;
         }
 
@@ -174,11 +175,10 @@ public class BasketSide extends LinearOpMode {
     public class InWristRight implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            if (inwrist.getPosition() < 1){
-                inwrist.setPosition(inwristpos + 0.1);
-                sleep(75);
-                inwristpos = inwristpos + 0.1;
-            }
+
+                inwrist.setPosition(1);
+
+
             return false;
         }
 
@@ -341,6 +341,7 @@ public class BasketSide extends LinearOpMode {
             return new OutArmUp();
         }
 
+
     }
 
 
@@ -392,7 +393,7 @@ public class BasketSide extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
 
-                lastliftpos = 750;
+                lastliftpos = 600;
 
                 Leftlift.setTargetPosition(lastliftpos);
                 Rightlift.setTargetPosition(lastliftpos);
@@ -415,14 +416,14 @@ public class BasketSide extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
 
-                lastliftpos = 500;
-
+                lastliftpos = 10;
+                sleep(1000);
                 Leftlift.setTargetPosition(lastliftpos);
                 Rightlift.setTargetPosition(lastliftpos);
                 Leftlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                Leftlift.setPower(0.5);
-                Rightlift.setPower(0.5);
+                Leftlift.setPower(0.3);
+                Rightlift.setPower(0.3);
                 sleep(100);
 
 
@@ -500,16 +501,26 @@ public class BasketSide extends LinearOpMode {
         Lift lift = new Lift(hardwareMap);
 
         Action clip;
+        Action dropclip;
+        Action getblock1;
 
          clip = drive.actionBuilder(initialPose)
-                        .strafeTo(new Vector2d(8.5,39.5))
+                        .strafeTo(new Vector2d(8.5,42))
                                 .build();
+         dropclip = drive.actionBuilder(new Pose2d(8.5, 42, Math.toRadians(90)))
+                 .strafeToLinearHeading(new Vector2d(8.5, 45), Math.toRadians(95))
+                         .build();
+         getblock1 = drive.actionBuilder(new Pose2d(8.5,45,Math.toRadians(90)))
+                 .strafeToLinearHeading(new Vector2d(46.5, 50), Math.toRadians(270))
+                         .build();
+
 
 
         //init actions
         Actions.runBlocking(
                 new SequentialAction(
                         intake.armstart(),
+                        intake.inclawretract(),
                         outtake.outarmdown(),
                         outtake.outclawextend(),
                         intake.horizontalretraction()
@@ -519,9 +530,47 @@ public class BasketSide extends LinearOpMode {
         if (opModeIsActive()) {
         Actions.runBlocking(
                 new SequentialAction(
-                        clip
+                        clip,
+                        lift.liftupclip(),
+                        outtake.outarmup(),
+                        outtake.outwristleft(),
+                        lift.liftdownclip()
+
                 )
         );
+        sleep(1000);
+        Actions.runBlocking(
+                new SequentialAction(
+                        outtake.outclawretract()
+
+                )
+        );
+        sleep(1000);
+            Actions.runBlocking(
+                    new SequentialAction(
+                            dropclip
+                    )
+            );
+            sleep(500);
+            Actions.runBlocking(new SequentialAction(
+                    outtake.outarmdown(),
+                    outtake.outwristreset(),
+                    getblock1,
+                    intake.inclawretract(),
+                    intake.inarmup(),
+                    intake.inwristleft()
+
+            ));
+            sleep(1000);
+            Actions.runBlocking(
+                    new SequentialAction(
+                            intake.inarmdown(),
+                            intake.inclawextend()
+                    )
+            );
+
+
+
 sleep(30000);
 
 

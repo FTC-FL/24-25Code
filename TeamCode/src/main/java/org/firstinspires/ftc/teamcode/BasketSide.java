@@ -416,7 +416,7 @@ public class BasketSide extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
 
-                lastliftpos = 10;
+                lastliftpos = 0;
                 sleep(1000);
                 Leftlift.setTargetPosition(lastliftpos);
                 Rightlift.setTargetPosition(lastliftpos);
@@ -505,13 +505,14 @@ public class BasketSide extends LinearOpMode {
         Action getblock1;
 
          clip = drive.actionBuilder(initialPose)
-                        .strafeTo(new Vector2d(8.5,42))
+                        .strafeTo(new Vector2d(8.5,44.5))
                                 .build();
-         dropclip = drive.actionBuilder(new Pose2d(8.5, 42, Math.toRadians(90)))
-                 .strafeToLinearHeading(new Vector2d(8.5, 45), Math.toRadians(95))
+         dropclip = drive.actionBuilder(new Pose2d(8.5, 44.5, Math.toRadians(90)))
+                 .strafeToLinearHeading(new Vector2d(8.5, 49), Math.toRadians(90))
                          .build();
-         getblock1 = drive.actionBuilder(new Pose2d(8.5,45,Math.toRadians(90)))
-                 .strafeToLinearHeading(new Vector2d(46.5, 50), Math.toRadians(270))
+         getblock1 = drive.actionBuilder(new Pose2d(8.5,49,Math.toRadians(90)))
+                 .strafeToLinearHeading(new Vector2d(44.15, 45.5), Math.toRadians(270))
+                 .strafeTo(new Vector2d(45, 34.75))
                          .build();
 
 
@@ -523,7 +524,8 @@ public class BasketSide extends LinearOpMode {
                         intake.inclawretract(),
                         outtake.outarmdown(),
                         outtake.outclawextend(),
-                        intake.horizontalretraction()
+                        intake.horizontalretraction(),
+                        intake.inwristzero()
                 )
         );
         waitForStart();
@@ -564,12 +566,31 @@ public class BasketSide extends LinearOpMode {
             sleep(1000);
             Actions.runBlocking(
                     new SequentialAction(
-                            intake.inarmdown(),
+                            intake.inarmdown()
+                    )
+            );
+            sleep(500);
+            Actions.runBlocking(
+                    new SequentialAction(
                             intake.inclawextend()
                     )
             );
-
-
+            sleep(500);
+            Actions.runBlocking(
+                    new SequentialAction(
+                            intake.inarmback(),
+                            intake.inwristzero(),
+                            intake.horizontalretraction()
+                    )
+            );sleep(100);
+            Actions.runBlocking(new SequentialAction(
+                    outtake.outclawextend()
+            ));
+            sleep(50);
+            Actions.runBlocking(new SequentialAction(
+                    intake.inclawretract()));
+            sleep(150);
+            Actions.runBlocking(new SequentialAction(intake.transfer()));
 
 sleep(30000);
 

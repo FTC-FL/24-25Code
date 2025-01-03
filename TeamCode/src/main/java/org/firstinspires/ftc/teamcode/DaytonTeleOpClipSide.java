@@ -2,28 +2,21 @@ package org.firstinspires.ftc.teamcode;
 
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+
 import java.util.ArrayList;
 import java.util.List;
 
-// RR-specific imports
-import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.Vector2d;
-import com.acmerobotics.roadrunner.ftc.Actions;
-
-// Non-RR imports
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import org.firstinspires.ftc.teamcode.MecanumDrive;
-@TeleOp(name = "DaytonTeleOp")
-public class DaytonTeleOp extends LinearOpMode {
+@TeleOp(name = "DaytonTeleOpClipSide")
+public class DaytonTeleOpClipSide extends LinearOpMode {
     private DcMotor RightFront;
     private DcMotor RightBack;
 
@@ -199,7 +192,10 @@ public class DaytonTeleOp extends LinearOpMode {
     public class Transfer implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            inarm.setPosition(0.5);
+            leftext.setPosition(0.3);
+            rightext.setPosition(0.3);
+            inarm.setPosition(0.55);
+            inbelt.setPosition(0.5);
 
 
             return false;
@@ -290,7 +286,7 @@ public class DaytonTeleOp extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 outarm.setPosition(0.93);
-                outbelt.setPosition(0.489);
+                outbelt.setPosition(0.484);
                 return false;
             }
 
@@ -340,7 +336,7 @@ public class DaytonTeleOp extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if(gamepad2.dpad_up){ //&& liftlistnum > 0 && liftlistnum < 3) {
-                    lastliftpos = 2000; //liftposes.get(liftlistnum + 1);
+                    lastliftpos = 600; //liftposes.get(liftlistnum + 1);
 
                     Leftlift.setTargetPosition(lastliftpos);
                     Rightlift.setTargetPosition(lastliftpos);
@@ -348,17 +344,9 @@ public class DaytonTeleOp extends LinearOpMode {
                     Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     Leftlift.setPower(0.5);
                     Rightlift.setPower(0.5);
-                    sleep(100);
-                    liftlistnum = liftlistnum + 1;
+
                 }
-                else if(gamepad2.dpad_up && liftlistnum == 0){
-                    Leftlift.setTargetPosition(lastliftpos);
-                    Rightlift.setTargetPosition(lastliftpos);
-                    Leftlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    Leftlift.setPower(0.65);
-                    Rightlift.setPower(0.65);
-                }
+
                 return false;
             }
 
@@ -370,26 +358,19 @@ public class DaytonTeleOp extends LinearOpMode {
         public class LiftDown implements Action{
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                if(gamepad2.dpad_down && liftlistnum > 0) {
-                    lastliftpos = liftposes.get(liftlistnum - 1);
 
-                    Leftlift.setTargetPosition(lastliftpos);
-                    Rightlift.setTargetPosition(lastliftpos);
+
+
+                    Leftlift.setTargetPosition(0);
+                    Rightlift.setTargetPosition(0);
                     Leftlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     Leftlift.setPower(0.5);
                     Rightlift.setPower(0.5);
                     sleep(100);
                     liftlistnum = liftlistnum - 1;
-                }
-                else if(gamepad2.back && liftlistnum > 0){
-                    Leftlift.setTargetPosition(liftposes.get(0));
-                    Rightlift.setTargetPosition(liftposes.get(0));
-                    Leftlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    Leftlift.setPower(0.5);
-                    Rightlift.setPower(0.5);
-                }
+
+
                 return false;
             }
 
@@ -544,7 +525,7 @@ public class DaytonTeleOp extends LinearOpMode {
                 // open/ close outtake claw
                 if (gamepad2.x && liftdown) {
                     Actions.runBlocking(new SequentialAction(outtake.outclawextend()));
-                    sleep(50);
+                    sleep(100);
                     Actions.runBlocking(new SequentialAction(
                             intake.inclawretract()));
                     sleep(150);

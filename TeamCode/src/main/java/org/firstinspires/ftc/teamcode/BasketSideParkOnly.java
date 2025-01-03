@@ -2,16 +2,15 @@ package org.firstinspires.ftc.teamcode;
 
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.ParallelAction;
+import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
-import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -19,32 +18,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Vector2d;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import org.firstinspires.ftc.teamcode.MecanumDrive;
-
 @Config
-@Autonomous(name = "BasketSide")
-public class BasketSide extends LinearOpMode {
+@Autonomous(name = "BasketSideParkOnly")
+public class BasketSideParkOnly extends LinearOpMode {
 
 //Mechanisms
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -502,7 +480,7 @@ public class BasketSide extends LinearOpMode {
 
         Action clip;
         Action dropclip;
-        Action getblock1;
+        Action park;
 
          clip = drive.actionBuilder(initialPose)
                         .strafeTo(new Vector2d(8.5,44.5))
@@ -510,9 +488,10 @@ public class BasketSide extends LinearOpMode {
          dropclip = drive.actionBuilder(new Pose2d(8.5, 44.5, Math.toRadians(90)))
                  .strafeToLinearHeading(new Vector2d(8.5, 49), Math.toRadians(90))
                          .build();
-         getblock1 = drive.actionBuilder(new Pose2d(8.5,49,Math.toRadians(90)))
-                 .strafeToLinearHeading(new Vector2d(44.15, 45.5), Math.toRadians(270))
-                 .strafeTo(new Vector2d(45, 35.25))
+         park = drive.actionBuilder(new Pose2d(8.5,49,Math.toRadians(90)))
+                 .strafeToLinearHeading(new Vector2d(37, 45.5), Math.toRadians(5))
+                 .strafeToLinearHeading(new Vector2d(37, 16.5), Math.toRadians(5))
+                 .strafeToLinearHeading(new Vector2d(29.5, 16.5), Math.toRadians(5))
                          .build();
 
 
@@ -557,40 +536,12 @@ public class BasketSide extends LinearOpMode {
             Actions.runBlocking(new SequentialAction(
                     outtake.outarmdown(),
                     outtake.outwristreset(),
-                    getblock1,
-                    intake.inclawretract(),
-                    intake.inarmup(),
-                    intake.inwristleft()
+                    park,
+                    outtake.outarmup()
+
 
             ));
-            sleep(1000);
-            Actions.runBlocking(
-                    new SequentialAction(
-                            intake.inarmdown()
-                    )
-            );
-            sleep(750);
-            Actions.runBlocking(
-                    new SequentialAction(
-                            intake.inclawextend()
-                    )
-            );
-            sleep(1000);
-            Actions.runBlocking(
-                    new SequentialAction(
-                            intake.inarmback(),
-                            intake.inwristzero(),
-                            intake.horizontalretraction()
-                    )
-            );sleep(2000);
-            Actions.runBlocking(new SequentialAction(
-                    outtake.outclawextend()
-            ));
-            sleep(1000);
-            Actions.runBlocking(new SequentialAction(
-                    intake.inclawretract()));
-            sleep(150);
-            Actions.runBlocking(new SequentialAction(intake.transfer()));
+
 
 sleep(30000);
 

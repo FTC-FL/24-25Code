@@ -2,31 +2,31 @@ package org.firstinspires.ftc.teamcode;
 
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+
 import java.util.ArrayList;
 import java.util.List;
 
-// RR-specific imports
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.ftc.Actions;
+@Config
+@Autonomous(name = "ClipSideParkOnly")
+public class ClipSideParkOnly extends LinearOpMode {
 
-// Non-RR imports
-import com.qualcomm.robotcore.hardware.HardwareMap;
-
-@TeleOp(name = "DaytonTeleOpBasketSide")
-public class DaytonTeleOpBasketSide extends LinearOpMode {
-    private DcMotor RightFront;
-    private DcMotor RightBack;
-
-
-    private DcMotor LeftFront;
-    private DcMotor LeftBack;
 //Mechanisms
+
+
+
+
     public class Intake {
         private Servo rightext;
         private Servo leftext;
@@ -61,8 +61,8 @@ public class DaytonTeleOpBasketSide extends LinearOpMode {
     }public class HorizontalRetraction implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            rightext.setPosition(0.293);
-            leftext.setPosition(0.293);
+            rightext.setPosition(0.295);
+            leftext.setPosition(0.295);
             return false;
         }
     }
@@ -85,7 +85,7 @@ public class DaytonTeleOpBasketSide extends LinearOpMode {
     public class InArmDown implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            inarm.setPosition(0.665);
+            inarm.setPosition(0.675);
             inbelt.setPosition(0.83);
             return false;
         }
@@ -107,7 +107,7 @@ public class DaytonTeleOpBasketSide extends LinearOpMode {
     public class InArmBack implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            inarm.setPosition(0.5);
+            inarm.setPosition(0.43);
             inbelt.setPosition(0.14);
             return false;
         }
@@ -139,11 +139,10 @@ public class DaytonTeleOpBasketSide extends LinearOpMode {
     public class InWristLeft implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            if (inwrist.getPosition() > 0){
-                inwrist.setPosition(inwristpos - 0.1);
-                sleep(75);
-                inwristpos = inwristpos - 0.1;
-            }
+
+                inwrist.setPosition(0);
+
+
             return false;
         }
 
@@ -154,11 +153,10 @@ public class DaytonTeleOpBasketSide extends LinearOpMode {
     public class InWristRight implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            if (inwrist.getPosition() < 1){
-                inwrist.setPosition(inwristpos + 0.1);
-                sleep(75);
-                inwristpos = inwristpos + 0.1;
-            }
+
+                inwrist.setPosition(1);
+
+
             return false;
         }
 
@@ -195,10 +193,7 @@ public class DaytonTeleOpBasketSide extends LinearOpMode {
     public class Transfer implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            inarm.setPosition(0.6);
-            inbelt.setPosition(0.5);
-
-
+            inarm.setPosition(0.45);
             return false;
         }
 
@@ -206,8 +201,23 @@ public class DaytonTeleOpBasketSide extends LinearOpMode {
     public Action transfer(){
         return new Transfer();
     }
+        public class Armstart implements Action{
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                inbelt.setPosition(0.5);
+                inarm.setPosition(0.5);
 
+                return false;
+            }
+
+        }
+        public Action armstart(){
+            return new Armstart();
+        }
     }
+
+
+
 
 
 
@@ -226,7 +236,7 @@ public class DaytonTeleOpBasketSide extends LinearOpMode {
         public class OutWristReset implements Action{
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                outwrist.setPosition(0.51);
+                outwrist.setPosition(0.52);
                 return false;
             }
 
@@ -286,8 +296,8 @@ public class DaytonTeleOpBasketSide extends LinearOpMode {
         public class OutArmDown implements Action{
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                outarm.setPosition(0.81);
-                outbelt.setPosition(0.56);
+                outarm.setPosition(0.93);
+                outbelt.setPosition(0.489);
                 return false;
             }
 
@@ -308,6 +318,7 @@ public class DaytonTeleOpBasketSide extends LinearOpMode {
         public Action outarmup(){
             return new OutArmUp();
         }
+
 
     }
 
@@ -333,11 +344,11 @@ public class DaytonTeleOpBasketSide extends LinearOpMode {
 
         }
 
-        public class LiftUp implements Action{
+        public class LiftUpBasket implements Action{
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                if(gamepad2.dpad_up){ //&& liftlistnum > 0 && liftlistnum < 3) {
-                    lastliftpos = 2100; //liftposes.get(liftlistnum + 1);
+
+                    lastliftpos = 2000;
 
                     Leftlift.setTargetPosition(lastliftpos);
                     Rightlift.setTargetPosition(lastliftpos);
@@ -345,22 +356,68 @@ public class DaytonTeleOpBasketSide extends LinearOpMode {
                     Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     Leftlift.setPower(0.5);
                     Rightlift.setPower(0.5);
+                    sleep(100);
 
-                }
+
 
                 return false;
             }
 
         }
-        public Action liftup(){
-            return new LiftUp();
+        public Action liftupbasket(){
+            return new LiftUpBasket();
         }
-
-        public class LiftDown implements Action{
+        public class LiftUpClip implements Action{
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
 
-                    lastliftpos = 0;
+                lastliftpos = 600;
+
+                Leftlift.setTargetPosition(lastliftpos);
+                Rightlift.setTargetPosition(lastliftpos);
+                Leftlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                Leftlift.setPower(0.5);
+                Rightlift.setPower(0.5);
+                sleep(100);
+
+
+
+                return false;
+            }
+
+        }
+        public Action liftupclip(){
+            return new LiftUpClip();
+        }
+        public class LiftDownClip implements Action{
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+
+                lastliftpos = 0;
+                sleep(1000);
+                Leftlift.setTargetPosition(lastliftpos);
+                Rightlift.setTargetPosition(lastliftpos);
+                Leftlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                Leftlift.setPower(0.3);
+                Rightlift.setPower(0.3);
+                sleep(100);
+
+
+
+                return false;
+            }
+
+        }
+        public Action liftdownclip(){
+            return new LiftDownClip();
+        }
+        public class LiftDown implements Action{
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if(gamepad2.dpad_down && liftlistnum > 0) {
+                    lastliftpos = liftposes.get(liftlistnum - 1);
 
                     Leftlift.setTargetPosition(lastliftpos);
                     Rightlift.setTargetPosition(lastliftpos);
@@ -368,9 +425,17 @@ public class DaytonTeleOpBasketSide extends LinearOpMode {
                     Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     Leftlift.setPower(0.5);
                     Rightlift.setPower(0.5);
-
-
-
+                    sleep(100);
+                    liftlistnum = liftlistnum - 1;
+                }
+                else if(gamepad2.back && liftlistnum > 0){
+                    Leftlift.setTargetPosition(liftposes.get(0));
+                    Rightlift.setTargetPosition(liftposes.get(0));
+                    Leftlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    Leftlift.setPower(0.5);
+                    Rightlift.setPower(0.5);
+                }
                 return false;
             }
 
@@ -405,148 +470,126 @@ public class DaytonTeleOpBasketSide extends LinearOpMode {
     /**
      * This function is executed when this OpMode is selected from the Driver Station.
      */
-    @Override
+
     public void runOpMode() {
-        double inwristpos;
-        int lastliftpos;
-        int liftamount;
-        float forwardpos;
-        float horizontalpos;
-        float headingpos;
-        boolean liftdown;
-        boolean outclawext;
+        Pose2d initialPose = new Pose2d(-8.5, 63, Math.toRadians(90));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
         Intake intake = new Intake(hardwareMap);
         Outtake outtake = new Outtake(hardwareMap);
         Lift lift = new Lift(hardwareMap);
-        RightFront = hardwareMap.get(DcMotor.class, "RightFront");
-        RightBack = hardwareMap.get(DcMotor.class, "RightBack");
-        LeftFront = hardwareMap.get(DcMotor.class, "LeftFront");
-        LeftBack = hardwareMap.get(DcMotor.class, "LeftBack");
+
+        Action clip;
+        Action dropclip;
+        Action park;
+
+         clip = drive.actionBuilder(initialPose)
+                        .strafeTo(new Vector2d(-8.5,44.5))
+                                .build();
+         dropclip = drive.actionBuilder(new Pose2d(-8.5, 44.5, Math.toRadians(90)))
+                 .strafeToLinearHeading(new Vector2d(-8.5, 49), Math.toRadians(90))
+                         .build();
+         park = drive.actionBuilder(new Pose2d(-8.5,49,Math.toRadians(90)))
+                 .strafeToLinearHeading(new Vector2d(-56.5, 81), Math.toRadians(90))
+                         .build();
 
 
-        // Put initialization blocks here.
-        RightFront.setDirection(DcMotor.Direction.REVERSE);
-        RightBack.setDirection(DcMotor.Direction.REVERSE);
 
-        inwristpos = 0.5;
-        lastliftpos = 2000;
-        liftamount = 250;
-        outclawext = false;
-        liftdown = true;
+        //init actions
+        Actions.runBlocking(
+                new SequentialAction(
+                        intake.armstart(),
+                        intake.inclawretract(),
+                        outtake.outarmdown(),
+                        outtake.outclawextend(),
+                        intake.horizontalretraction(),
+                        intake.inwristzero()
+                )
+        );
         waitForStart();
         if (opModeIsActive()) {
-            // Put run blocks here.
-            // set outtake arm on tele start
+        Actions.runBlocking(
+                new SequentialAction(
+                        clip,
+                        lift.liftupclip(),
+                        outtake.outarmup(),
+                        outtake.outwristleft(),
+                        lift.liftdownclip()
+
+                )
+        );
+        sleep(1000);
+        Actions.runBlocking(
+                new SequentialAction(
+                        outtake.outclawretract()
+
+                )
+        );
+        sleep(1000);
             Actions.runBlocking(
                     new SequentialAction(
-                        outtake.outarmdown(),
-                            outtake.outwristreset(),
-                            outtake.outclawretract(),
-                            lift.liftreset()
+                            dropclip
                     )
             );
+            sleep(500);
+            Actions.runBlocking(new SequentialAction(
+                    outtake.outarmdown(),
+                    outtake.outwristreset(),
+                    park
 
-            while (opModeIsActive()) {
-                // Put loop blocks here.
-                // driving blocks
-                forwardpos = gamepad1.left_stick_y;
-                horizontalpos = -gamepad1.left_stick_x;
-                headingpos = -gamepad1.right_stick_x;
-                RightFront.setPower((-headingpos + (forwardpos - horizontalpos)) * 0.5);
-                RightBack.setPower((-headingpos + forwardpos + horizontalpos) * 0.5);
-                LeftFront.setPower((headingpos + forwardpos + horizontalpos) * 0.5);
-                LeftBack.setPower((headingpos + (forwardpos - horizontalpos)) * 0.5);
-                // intake arm grab position
-                if (gamepad1.x) {
-                    Actions.runBlocking(intake.inarmup());
-                }
-                if (gamepad1.y) {
-                    Actions.runBlocking(intake.inarmdown());
-                }
-                // intake claw blocks
-                if (gamepad1.a) {
-                    Actions.runBlocking(intake.inclawretract());
-                }
-                if (gamepad1.b) {
-                    Actions.runBlocking(intake.inclawextend());
-                }
-                // rotate intake wirst
-                if (gamepad1.left_bumper) {
-                    Actions.runBlocking(intake.inwristleft());
-                }
-                if (gamepad1.right_bumper) {
-                    Actions.runBlocking(intake.inwristright());
-                }
-                if (gamepad1.start) {
-                    Actions.runBlocking(intake.inwristreset());
-                }
-                // return intake for transfer
-                if (gamepad1.back) {
-                    Actions.runBlocking(
-                            new SequentialAction(
-                                    intake.inarmback(),
-                                    intake.inwristzero(),
-                                    intake.horizontalretraction()
-                            )
-                    );
-                }
-                // extend/ retract intake
-                if (gamepad1.right_trigger >= 0.5) {
-                    Actions.runBlocking(intake.horizontalfullextension());
-                }
-                if (gamepad1.left_trigger >= 0.5) {
-                    Actions.runBlocking(intake.horizontalretraction());
-                }
 
-                // raise and lower lift
-                if (gamepad2.dpad_up) {
-                    Actions.runBlocking(
-                      new SequentialAction(
-                              lift.liftup(),
-                              outtake.outarmup()
-                      )
-                    );
-                }
 
-                if (gamepad2.dpad_down) {
-                    Actions.runBlocking(lift.liftdown());
-                }
-                // return lift
-                if (gamepad2.back) {
-                    Actions.runBlocking(
-                            new SequentialAction(
-                                    lift.liftdown(),
-                                    outtake.outarmdown(),
-                                    outtake.outclawretract(),
-                                    outtake.outwristreset()
-                            )
-                    );
-                }
-                // open/ close outtake claw
-                if (gamepad2.x && liftdown) {
-                    Actions.runBlocking(new SequentialAction(outtake.outclawextend()));
-                    sleep(50);
-                    Actions.runBlocking(new SequentialAction(
-                            intake.inclawretract()));
-                    sleep(150);
-                    Actions.runBlocking(new SequentialAction(intake.transfer()));
-                }
-                if (gamepad2.y) {
-                    Actions.runBlocking(outtake.outclawretract());
-                }
-                // rotate outtake wrist
-                if (gamepad2.start) {
-                    Actions.runBlocking(outtake.outwristreset());
-                }
-                if (gamepad2.dpad_right) {
-                    Actions.runBlocking(outtake.outwristright());
-                }
-                if (gamepad2.dpad_left) {
-                    Actions.runBlocking(outtake.outwristleft());
-                }
+            ));
 
-                telemetry.update();
-            }
+
+sleep(30000);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         }
     }
 }

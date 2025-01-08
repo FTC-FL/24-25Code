@@ -82,7 +82,7 @@ public class DaytonTeleOpClipSide extends LinearOpMode {
     public class InArmDown implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            inarm.setPosition(0.665);
+            inarm.setPosition(0.68);
             inbelt.setPosition(0.83);
             return false;
         }
@@ -93,7 +93,7 @@ public class DaytonTeleOpClipSide extends LinearOpMode {
     public class InArmUp implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            inarm.setPosition(0.63);
+            inarm.setPosition(0.65);
             inbelt.setPosition(0.9);
             return false;
         }
@@ -105,7 +105,7 @@ public class DaytonTeleOpClipSide extends LinearOpMode {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             inarm.setPosition(0.5);
-            inbelt.setPosition(0.14);
+            inbelt.setPosition(0.17);
             return false;
         }
     }
@@ -283,7 +283,7 @@ public class DaytonTeleOpClipSide extends LinearOpMode {
         public class OutArmDown implements Action{
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                outarm.setPosition(0.81);
+                outarm.setPosition(0.785);
                 outbelt.setPosition(0.56);
                 return false;
             }
@@ -390,6 +390,50 @@ public class DaytonTeleOpClipSide extends LinearOpMode {
         }
         public Action liftreset(){
             return new LiftReset();
+        }
+        public class LiftUpHang implements Action{
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+
+                lastliftpos = 750;
+
+                Leftlift.setTargetPosition(lastliftpos);
+                Rightlift.setTargetPosition(lastliftpos);
+                Leftlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                Leftlift.setPower(0.5);
+                Rightlift.setPower(0.5);
+
+
+
+                return false;
+            }
+
+        }
+        public Action liftuphang(){
+            return new DaytonTeleOpClipSide.Lift.LiftUpHang();
+        }
+        public class LiftDownHang implements Action{
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+
+                lastliftpos = 0;
+
+                Leftlift.setTargetPosition(lastliftpos);
+                Rightlift.setTargetPosition(lastliftpos);
+                Leftlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                Leftlift.setPower(.85);
+                Rightlift.setPower(.85);
+
+
+
+                return false;
+            }
+
+        }
+        public Action liftdownhang(){
+            return new DaytonTeleOpClipSide.Lift.LiftDownHang();
         }
 
     }

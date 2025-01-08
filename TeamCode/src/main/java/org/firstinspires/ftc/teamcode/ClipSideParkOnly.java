@@ -107,7 +107,7 @@ public class ClipSideParkOnly extends LinearOpMode {
     public class InArmBack implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            inarm.setPosition(0.43);
+            inarm.setPosition(0.46);
             inbelt.setPosition(0.14);
             return false;
         }

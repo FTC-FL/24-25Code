@@ -61,8 +61,8 @@ public class DaytonTeleOpBasketSide extends LinearOpMode {
     }public class HorizontalRetraction implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            rightext.setPosition(0.293);
-            leftext.setPosition(0.293);
+            rightext.setPosition(0.292);
+            leftext.setPosition(0.292);
             return false;
         }
     }
@@ -73,8 +73,8 @@ public class DaytonTeleOpBasketSide extends LinearOpMode {
     public class HorizontalHalfExtension implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            rightext.setPosition(0.33);
-            leftext.setPosition(0.33);
+            rightext.setPosition(0.31);
+            leftext.setPosition(0.31);
             return false;
         }
     }
@@ -528,8 +528,12 @@ public class DaytonTeleOpBasketSide extends LinearOpMode {
                     sleep(50);
                     Actions.runBlocking(new SequentialAction(
                             intake.inclawretract()));
-                    sleep(150);
-                    Actions.runBlocking(new SequentialAction(intake.transfer()));
+                            sleep(50);
+                    Actions.runBlocking(new SequentialAction(
+                            intake.horizontalhalfextension()));
+                    sleep(200);
+                    Actions.runBlocking(new SequentialAction(
+                            intake.transfer()));
                 }
                 if (gamepad2.y) {
                     Actions.runBlocking(outtake.outclawretract());

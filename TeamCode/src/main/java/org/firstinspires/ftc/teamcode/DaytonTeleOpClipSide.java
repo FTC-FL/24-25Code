@@ -58,8 +58,8 @@ public class DaytonTeleOpClipSide extends LinearOpMode {
     }public class HorizontalRetraction implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            rightext.setPosition(0.295);
-            leftext.setPosition(0.295);
+            rightext.setPosition(0.292);
+            leftext.setPosition(0.292);
             return false;
         }
     }
@@ -70,8 +70,8 @@ public class DaytonTeleOpClipSide extends LinearOpMode {
     public class HorizontalHalfExtension implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            rightext.setPosition(0.33);
-            leftext.setPosition(0.33);
+            rightext.setPosition(0.31);
+            leftext.setPosition(0.31);
             return false;
         }
     }
@@ -104,7 +104,7 @@ public class DaytonTeleOpClipSide extends LinearOpMode {
     public class InArmBack implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            inarm.setPosition(0.43);
+            inarm.setPosition(0.5);
             inbelt.setPosition(0.14);
             return false;
         }
@@ -192,9 +192,7 @@ public class DaytonTeleOpClipSide extends LinearOpMode {
     public class Transfer implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            leftext.setPosition(0.3);
-            rightext.setPosition(0.3);
-            inarm.setPosition(0.55);
+            inarm.setPosition(0.6);
             inbelt.setPosition(0.5);
 
 
@@ -285,8 +283,8 @@ public class DaytonTeleOpClipSide extends LinearOpMode {
         public class OutArmDown implements Action{
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                outarm.setPosition(0.93);
-                outbelt.setPosition(0.484);
+                outarm.setPosition(0.81);
+                outbelt.setPosition(0.56);
                 return false;
             }
 
@@ -528,6 +526,9 @@ public class DaytonTeleOpClipSide extends LinearOpMode {
                     sleep(100);
                     Actions.runBlocking(new SequentialAction(
                             intake.inclawretract()));
+                    sleep(50);
+                    Actions.runBlocking(new SequentialAction(
+                            intake.horizontalhalfextension()));
                     sleep(150);
                     Actions.runBlocking(new SequentialAction(intake.transfer()));
                 }

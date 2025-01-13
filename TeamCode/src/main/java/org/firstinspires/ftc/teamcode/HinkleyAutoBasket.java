@@ -7,6 +7,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -348,7 +349,7 @@ public class HinkleyAutoBasket extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
 
-                    lastliftpos = 2000;
+                    lastliftpos = 2100;
 
                     Leftlift.setTargetPosition(lastliftpos);
                     Rightlift.setTargetPosition(lastliftpos);
@@ -400,8 +401,8 @@ public class HinkleyAutoBasket extends LinearOpMode {
                 Rightlift.setTargetPosition(lastliftpos);
                 Leftlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                Leftlift.setPower(0.3);
-                Rightlift.setPower(0.3);
+                Leftlift.setPower(0.5);
+                Rightlift.setPower(0.5);
                 sleep(100);
 
 
@@ -472,27 +473,27 @@ public class HinkleyAutoBasket extends LinearOpMode {
      */
 
     public void runOpMode() {
-        Pose2d initialPose = new Pose2d(8.5, 63, Math.toRadians(90));
+        Pose2d initialPose = new Pose2d(35, 61.5, Math.toRadians(180));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
         Intake intake = new Intake(hardwareMap);
         Outtake outtake = new Outtake(hardwareMap);
         Lift lift = new Lift(hardwareMap);
 
-        Action clip;
-        Action dropclip;
-        Action park;
+        Action basket1;
+        Action basket1depo;
+        Action getblock2;
 
-         clip = drive.actionBuilder(initialPose)
-                        .strafeTo(new Vector2d(8.5,44.5))
+
+         basket1 = drive.actionBuilder(initialPose)
+                        .strafeToLinearHeading(new Vector2d(54,51), Math.toRadians(225))
                                 .build();
-         dropclip = drive.actionBuilder(new Pose2d(8.5, 44.5, Math.toRadians(90)))
-                 .strafeToLinearHeading(new Vector2d(8.5, 49), Math.toRadians(90))
+         basket1depo = drive.actionBuilder(new Pose2d(54,51,Math.toRadians(225)))
+                 .strafeTo(new Vector2d(57,53))
                          .build();
-         park = drive.actionBuilder(new Pose2d(8.5,49,Math.toRadians(90)))
-                 .strafeToLinearHeading(new Vector2d(37, 45.5), Math.toRadians(5))
-                 .strafeToLinearHeading(new Vector2d(37, 16.5), Math.toRadians(5))
-                 .strafeToLinearHeading(new Vector2d(27, 16.5), Math.toRadians(5))
+         getblock2 = drive.actionBuilder(new Pose2d(57,53,Math.toRadians(225)))
+                 .strafeToLinearHeading(new Vector2d(47,50),Math.toRadians(269))
                          .build();
+
 
 
 
@@ -509,39 +510,27 @@ public class HinkleyAutoBasket extends LinearOpMode {
         );
         waitForStart();
         if (opModeIsActive()) {
-        sleep(5000);
-            Actions.runBlocking(
-                new SequentialAction(
-                        clip,
-                        lift.liftupclip(),
-                        outtake.outarmup(),
-                        outtake.outwristleft(),
-                        lift.liftdownclip()
-
-                )
-        );
-        sleep(1000);
-        Actions.runBlocking(
-                new SequentialAction(
-                        outtake.outclawretract()
-
-                )
-        );
-        sleep(1000);
             Actions.runBlocking(
                     new SequentialAction(
-                            dropclip
+                            outtake.outwristreset(),
+                            basket1,
+                            lift.liftupbasket(),
+                            outtake.outarmup()
+
                     )
             );
-            sleep(500);
+            Actions.runBlocking(new SleepAction(3));
             Actions.runBlocking(new SequentialAction(
+                    basket1depo,
+                    outtake.outclawretract(),
+                    getblock2,
+                    lift.liftdownclip(),
                     outtake.outarmdown(),
-                    outtake.outwristreset(),
-                    park,
-                    outtake.outarmup()
-
-
+                    intake.horizontalfullextension(),
+                    intake.inarmup()
             ));
+
+
 
 
 sleep(30000);

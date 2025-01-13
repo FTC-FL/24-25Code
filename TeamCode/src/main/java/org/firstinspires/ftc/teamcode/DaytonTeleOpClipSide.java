@@ -82,7 +82,7 @@ public class DaytonTeleOpClipSide extends LinearOpMode {
     public class InArmDown implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            inarm.setPosition(0.68);
+            inarm.setPosition(0.685);
             inbelt.setPosition(0.83);
             return false;
         }

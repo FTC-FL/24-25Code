@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Config
-@Autonomous(name = "ClipSideParkOnly")
+@Autonomous(name = "ClipSideParkOnly", preselectTeleOp = "DaytonTeleOpClipSide")
 public class ClipSideParkOnly extends LinearOpMode {
 
 //Mechanisms
@@ -205,7 +205,7 @@ public class ClipSideParkOnly extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 inbelt.setPosition(0.5);
-                inarm.setPosition(0.5);
+                inarm.setPosition(0.53);
 
                 return false;
             }

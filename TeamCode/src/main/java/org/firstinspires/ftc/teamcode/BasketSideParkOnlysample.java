@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Config
-@Autonomous(name = "BasketSideParkOnly", preselectTeleOp = "DaytonTeleOpBasketSide")
-public class BasketSideParkOnly extends LinearOpMode {
+@Autonomous(name = "BasketSideParkOnlySample", preselectTeleOp = "DaytonTeleOpBasketSide")
+public class BasketSideParkOnlysample extends LinearOpMode {
 
 //Mechanisms
 
@@ -371,7 +371,7 @@ public class BasketSideParkOnly extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
 
-                lastliftpos = 600;
+                lastliftpos = 2100;
 
                 Leftlift.setTargetPosition(lastliftpos);
                 Rightlift.setTargetPosition(lastliftpos);
@@ -483,7 +483,7 @@ public class BasketSideParkOnly extends LinearOpMode {
         Action park;
 
          clip = drive.actionBuilder(initialPose)
-                        .strafeTo(new Vector2d(8.5,44.5))
+                        .strafeToLinearHeading(new Vector2d(47,43.5), Math.toRadians(225))
                                 .build();
          dropclip = drive.actionBuilder(new Pose2d(8.5, 44.5, Math.toRadians(90)))
                  .strafeToLinearHeading(new Vector2d(8.5, 49), Math.toRadians(90))
@@ -491,7 +491,7 @@ public class BasketSideParkOnly extends LinearOpMode {
          park = drive.actionBuilder(new Pose2d(8.5,49,Math.toRadians(90)))
                  .strafeToLinearHeading(new Vector2d(37, 45.5), Math.toRadians(5))
                  .strafeToLinearHeading(new Vector2d(37, 16.5), Math.toRadians(5))
-                 .strafeToLinearHeading(new Vector2d(27, 16.5), Math.toRadians(5))
+                 .strafeToLinearHeading(new Vector2d(28, 16.5), Math.toRadians(5))
                          .build();
 
 
@@ -509,8 +509,7 @@ public class BasketSideParkOnly extends LinearOpMode {
         );
         waitForStart();
         if (opModeIsActive()) {
-        sleep(5000);
-            Actions.runBlocking(
+        Actions.runBlocking(
                 new SequentialAction(
                         clip,
                         lift.liftupclip(),

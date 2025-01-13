@@ -85,7 +85,7 @@ public class DaytonTeleOpBasketSide extends LinearOpMode {
     public class InArmDown implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            inarm.setPosition(0.68);
+            inarm.setPosition(0.685);
             inbelt.setPosition(0.83);
             return false;
         }
@@ -343,8 +343,8 @@ public class DaytonTeleOpBasketSide extends LinearOpMode {
                     Rightlift.setTargetPosition(lastliftpos);
                     Leftlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    Leftlift.setPower(0.5);
-                    Rightlift.setPower(0.5);
+                    Leftlift.setPower(0.9);
+                    Rightlift.setPower(0.9);
 
                 }
 
@@ -366,8 +366,8 @@ public class DaytonTeleOpBasketSide extends LinearOpMode {
                     Rightlift.setTargetPosition(lastliftpos);
                     Leftlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    Leftlift.setPower(0.5);
-                    Rightlift.setPower(0.5);
+                    Leftlift.setPower(0.8);
+                    Rightlift.setPower(0.8);
 
 
 

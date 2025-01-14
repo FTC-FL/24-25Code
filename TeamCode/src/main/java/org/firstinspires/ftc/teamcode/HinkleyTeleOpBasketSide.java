@@ -32,6 +32,7 @@ public class HinkleyTeleOpBasketSide extends LinearOpMode {
         private Servo inarm;
         private Servo inbelt;
         double inwristpos;
+        double inarmdownpos;
 
         public Intake(HardwareMap hardwareMap){
             rightext = hardwareMap.get(Servo.class, "rightext");
@@ -42,6 +43,7 @@ public class HinkleyTeleOpBasketSide extends LinearOpMode {
             leftext = hardwareMap.get(Servo.class, "leftext");
             rightext.setDirection(Servo.Direction.REVERSE);
             inwristpos = 0.5;
+            inarmdownpos = 0.7;
         }
         //Actions
     public class HorizontalFullExtension implements Action{
@@ -82,7 +84,7 @@ public class HinkleyTeleOpBasketSide extends LinearOpMode {
     public class InArmDown implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            inarm.setPosition(0.685);
+            inarm.setPosition(inarmdownpos);
             inbelt.setPosition(0.83);
             return false;
         }
@@ -93,7 +95,7 @@ public class HinkleyTeleOpBasketSide extends LinearOpMode {
     public class InArmUp implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            inarm.setPosition(0.65);
+            inarm.setPosition(inarmdownpos - 0.035);
             inbelt.setPosition(0.9);
             return false;
         }
@@ -104,7 +106,7 @@ public class HinkleyTeleOpBasketSide extends LinearOpMode {
     public class InArmBack implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            inarm.setPosition(0.5);
+            inarm.setPosition(inarmdownpos - 0.185);
             inbelt.setPosition(0.17);
             return false;
         }
@@ -334,14 +336,14 @@ public class HinkleyTeleOpBasketSide extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if(gamepad2.dpad_up){ //&& liftlistnum > 0 && liftlistnum < 3) {
-                    lastliftpos = 2100; //liftposes.get(liftlistnum + 1);
+                    lastliftpos = 3000; //liftposes.get(liftlistnum + 1);
 
                     Leftlift.setTargetPosition(lastliftpos);
                     Rightlift.setTargetPosition(lastliftpos);
                     Leftlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    Leftlift.setPower(0.9);
-                    Rightlift.setPower(0.9);
+                    Leftlift.setPower(1);
+                    Rightlift.setPower(1);
 
                 }
 
@@ -395,7 +397,7 @@ public class HinkleyTeleOpBasketSide extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
 
-                lastliftpos = 750;
+                lastliftpos = 1000;
 
                 Leftlift.setTargetPosition(lastliftpos);
                 Rightlift.setTargetPosition(lastliftpos);
@@ -417,14 +419,14 @@ public class HinkleyTeleOpBasketSide extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
 
-                lastliftpos = 0;
+                lastliftpos = 450;
 
                 Leftlift.setTargetPosition(lastliftpos);
                 Rightlift.setTargetPosition(lastliftpos);
                 Leftlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                Leftlift.setPower(.85);
-                Rightlift.setPower(.85);
+                Leftlift.setPower(.5);
+                Rightlift.setPower(.5);
 
 
 

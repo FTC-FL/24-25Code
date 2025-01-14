@@ -36,6 +36,7 @@ public class HinkleyAutoBasket extends LinearOpMode {
         private Servo inarm;
         private Servo inbelt;
         double inwristpos;
+        double inarmdownpos;
 
         public Intake(HardwareMap hardwareMap){
             rightext = hardwareMap.get(Servo.class, "rightext");
@@ -46,6 +47,7 @@ public class HinkleyAutoBasket extends LinearOpMode {
             leftext = hardwareMap.get(Servo.class, "leftext");
             rightext.setDirection(Servo.Direction.REVERSE);
             inwristpos = 0.5;
+            inarmdownpos = 0.7;
         }
         //Actions
     public class HorizontalFullExtension implements Action{
@@ -86,7 +88,7 @@ public class HinkleyAutoBasket extends LinearOpMode {
     public class InArmDown implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            inarm.setPosition(0.675);
+            inarm.setPosition(inarmdownpos);
             inbelt.setPosition(0.83);
             return false;
         }
@@ -97,7 +99,7 @@ public class HinkleyAutoBasket extends LinearOpMode {
     public class InArmUp implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            inarm.setPosition(0.63);
+            inarm.setPosition(inarmdownpos - 0.035);
             inbelt.setPosition(0.9);
             return false;
         }
@@ -108,8 +110,8 @@ public class HinkleyAutoBasket extends LinearOpMode {
     public class InArmBack implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            inarm.setPosition(0.46);
-            inbelt.setPosition(0.14);
+            inarm.setPosition(inarmdownpos - 0.185);
+            inbelt.setPosition(0.17);
             return false;
         }
     }
@@ -194,7 +196,8 @@ public class HinkleyAutoBasket extends LinearOpMode {
     public class Transfer implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            inarm.setPosition(0.45);
+            inarm.setPosition(inarmdownpos - 0.085);
+            inbelt.setPosition(0.5);
             return false;
         }
 
@@ -297,8 +300,8 @@ public class HinkleyAutoBasket extends LinearOpMode {
         public class OutArmDown implements Action{
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                outarm.setPosition(0.93);
-                outbelt.setPosition(0.489);
+                outarm.setPosition(0.785);
+                outbelt.setPosition(0.56);
                 return false;
             }
 
@@ -306,7 +309,18 @@ public class HinkleyAutoBasket extends LinearOpMode {
         public Action outarmdown(){
             return new OutArmDown();
         }
+        public class OutArmDownStart implements Action{
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                outarm.setPosition(0.93);
+                outbelt.setPosition(0.489);
+                return false;
+            }
 
+        }
+        public Action outarmdownstart(){
+            return new OutArmDownStart();
+        }
         public class OutArmUp implements Action{
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
@@ -349,14 +363,14 @@ public class HinkleyAutoBasket extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
 
-                    lastliftpos = 2100;
+                    lastliftpos = 3000;
 
                     Leftlift.setTargetPosition(lastliftpos);
                     Rightlift.setTargetPosition(lastliftpos);
                     Leftlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    Leftlift.setPower(0.5);
-                    Rightlift.setPower(0.5);
+                    Leftlift.setPower(1);
+                    Rightlift.setPower(1);
                     sleep(100);
 
 
@@ -482,6 +496,10 @@ public class HinkleyAutoBasket extends LinearOpMode {
         Action basket1;
         Action basket1depo;
         Action getblock2;
+        Action basket2;
+        Action basket2depo;
+        Action getblock3;
+        Action basket3;
 
 
          basket1 = drive.actionBuilder(initialPose)
@@ -491,10 +509,20 @@ public class HinkleyAutoBasket extends LinearOpMode {
                  .strafeTo(new Vector2d(57,53))
                          .build();
          getblock2 = drive.actionBuilder(new Pose2d(57,53,Math.toRadians(225)))
-                 .strafeToLinearHeading(new Vector2d(47,50),Math.toRadians(269))
+                 .strafeToLinearHeading(new Vector2d(47,49),Math.toRadians(269))
                          .build();
-
-
+        basket2 = drive.actionBuilder(new Pose2d(47, 49, Math.toRadians(269)))
+                .strafeToLinearHeading(new Vector2d(53,50), Math.toRadians(225))
+                .build();
+        basket2depo = drive.actionBuilder(new Pose2d(53,50,Math.toRadians(225)))
+                .strafeTo(new Vector2d(55,51))
+                .build();
+        getblock3 = drive.actionBuilder(new Pose2d(55, 51, Math.toRadians(225)))
+                .strafeToLinearHeading(new Vector2d(56.5,49), Math.toRadians(259))
+                        .build();
+        basket3 = drive.actionBuilder(new Pose2d(56.5,49,Math.toRadians(259)))
+                .strafeToLinearHeading(new Vector2d(53,50),Math.toRadians(245))
+                .build();
 
 
         //init actions
@@ -502,7 +530,7 @@ public class HinkleyAutoBasket extends LinearOpMode {
                 new SequentialAction(
                         intake.armstart(),
                         intake.inclawretract(),
-                        outtake.outarmdown(),
+                        outtake.outarmdownstart(),
                         outtake.outclawextend(),
                         intake.horizontalretraction(),
                         intake.inwristzero()
@@ -519,7 +547,7 @@ public class HinkleyAutoBasket extends LinearOpMode {
 
                     )
             );
-            Actions.runBlocking(new SleepAction(3));
+            Actions.runBlocking(new SleepAction(2));
             Actions.runBlocking(new SequentialAction(
                     basket1depo,
                     outtake.outclawretract(),
@@ -529,9 +557,62 @@ public class HinkleyAutoBasket extends LinearOpMode {
                     intake.horizontalfullextension(),
                     intake.inarmup()
             ));
-
-
-
+            Actions.runBlocking(new SleepAction(1.5));
+            Actions.runBlocking(new SequentialAction(intake.inarmdown()));
+            Actions.runBlocking(new SleepAction(0.5));
+            Actions.runBlocking(new SequentialAction(intake.inclawextend()));
+            Actions.runBlocking(new SleepAction(0.5));
+            Actions.runBlocking(new SequentialAction(intake.inarmback(),
+                    intake.horizontalretraction()));
+            Actions.runBlocking(new SleepAction(1.5));
+            Actions.runBlocking(new SequentialAction(outtake.outclawextend()));
+            Actions.runBlocking(new SleepAction(0.5));
+            Actions.runBlocking(new SequentialAction(
+                    intake.inclawretract()));
+            Actions.runBlocking(new SleepAction(0.05));
+            Actions.runBlocking(new SequentialAction(
+                    intake.horizontalhalfextension()));
+            Actions.runBlocking(new SleepAction(0.2));
+            Actions.runBlocking(new SequentialAction(
+                    intake.transfer(),
+                    basket2,
+                    lift.liftupbasket(),
+                    outtake.outarmup()
+                    ));
+            Actions.runBlocking(new SleepAction(2));
+            Actions.runBlocking(new SequentialAction(
+                    basket2depo,
+                    outtake.outclawretract()));
+            Actions.runBlocking(new SleepAction(0.5));
+            Actions.runBlocking(new SequentialAction(
+                    getblock3,
+                    lift.liftdownclip(),
+                    outtake.outarmdown(),
+                    intake.horizontalfullextension(),
+                    intake.inarmup()
+            ));
+            Actions.runBlocking(new SleepAction(1.5));
+            Actions.runBlocking(new SequentialAction(intake.inarmdown()));
+            Actions.runBlocking(new SleepAction(0.5));
+            Actions.runBlocking(new SequentialAction(intake.inclawextend()));
+            Actions.runBlocking(new SleepAction(0.5));
+            Actions.runBlocking(new SequentialAction(intake.inarmback(),
+                    intake.horizontalretraction()));
+            Actions.runBlocking(new SleepAction(1.5));
+            Actions.runBlocking(new SequentialAction(outtake.outclawextend()));
+            Actions.runBlocking(new SleepAction(0.5));
+            Actions.runBlocking(new SequentialAction(
+                    intake.inclawretract()));
+            Actions.runBlocking(new SleepAction(0.05));
+            Actions.runBlocking(new SequentialAction(
+                    intake.horizontalhalfextension()));
+            Actions.runBlocking(new SleepAction(0.2));
+            Actions.runBlocking(new SequentialAction(
+                    intake.transfer(),
+                    basket3,
+                    lift.liftupbasket(),
+                    outtake.outarmup()
+            ));
 
 sleep(30000);
 

@@ -221,7 +221,7 @@ public class HinkleyTeleOpBasketSide extends LinearOpMode {
             outbelt = hardwareMap.get(Servo.class, "outbelt");
             outwrist = hardwareMap.get(Servo.class, "outwrist");
             outclaw = hardwareMap.get(Servo.class, "outclaw");
-            outarmtransferpos = 0.768;
+            outarmtransferpos = 0.762;
         }
 
         public class OutWristReset implements Action{

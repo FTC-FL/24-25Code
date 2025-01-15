@@ -215,11 +215,13 @@ public class HinkleyTeleOpBasketSide extends LinearOpMode {
         private Servo outbelt;
         private Servo outwrist;
         private Servo outclaw;
+        double outarmtransferpos;
         public Outtake(HardwareMap hardwareMap){
             outarm = hardwareMap.get(Servo.class, "outarm");
             outbelt = hardwareMap.get(Servo.class, "outbelt");
             outwrist = hardwareMap.get(Servo.class, "outwrist");
             outclaw = hardwareMap.get(Servo.class, "outclaw");
+            outarmtransferpos = 0.768;
         }
 
         public class OutWristReset implements Action{
@@ -285,8 +287,8 @@ public class HinkleyTeleOpBasketSide extends LinearOpMode {
         public class OutArmDown implements Action{
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                outarm.setPosition(0.785);
-                outbelt.setPosition(0.56);
+                outarm.setPosition(outarmtransferpos);
+                outbelt.setPosition(0.555);
                 return false;
             }
 
@@ -298,7 +300,7 @@ public class HinkleyTeleOpBasketSide extends LinearOpMode {
         public class OutArmUp implements Action{
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                outarm.setPosition(0.62);
+                outarm.setPosition(outarmtransferpos - 0.165);
                 outbelt.setPosition(0.48);
                 return false;
             }

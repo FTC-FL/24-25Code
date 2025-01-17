@@ -236,7 +236,7 @@ public class HinkleyAutoBasket extends LinearOpMode {
             outbelt = hardwareMap.get(Servo.class, "outbelt");
             outwrist = hardwareMap.get(Servo.class, "outwrist");
             outclaw = hardwareMap.get(Servo.class, "outclaw");
-            outarmtransferpos = 0.763;
+            outarmtransferpos = 0.762;
         }
 
         public class OutWristReset implements Action{
@@ -500,8 +500,8 @@ public class HinkleyAutoBasket extends LinearOpMode {
         Action getblock2;
         Action basket2;
         Action basket2depo;
-        Action getblock3;
-        Action basket3;
+        Action park;
+        Action park2;
         Action basket3depo;
 
 
@@ -509,22 +509,22 @@ public class HinkleyAutoBasket extends LinearOpMode {
                         .strafeToLinearHeading(new Vector2d(54,51), Math.toRadians(225))
                                 .build();
          basket1depo = drive.actionBuilder(new Pose2d(54,51,Math.toRadians(225)))
-                 .strafeTo(new Vector2d(56,52))
+                 .strafeTo(new Vector2d(57,52))
                          .build();
-         getblock2 = drive.actionBuilder(new Pose2d(56,52,Math.toRadians(225)))
-                 .strafeToLinearHeading(new Vector2d(48.25,37.75),Math.toRadians(269))
+         getblock2 = drive.actionBuilder(new Pose2d(57,52,Math.toRadians(225)))
+                 .strafeToLinearHeading(new Vector2d(48.25,38),Math.toRadians(269))
                          .build();
-        basket2 = drive.actionBuilder(new Pose2d(48.25, 37.75, Math.toRadians(269)))
+        basket2 = drive.actionBuilder(new Pose2d(48.25, 38, Math.toRadians(269)))
                 .strafeToLinearHeading(new Vector2d(53,50), Math.toRadians(225))
                 .build();
         basket2depo = drive.actionBuilder(new Pose2d(53,50,Math.toRadians(225)))
                 .strafeTo(new Vector2d(55,51))
                 .build();
-        getblock3 = drive.actionBuilder(new Pose2d(55, 51, Math.toRadians(225)))
-                .strafeToLinearHeading(new Vector2d(56.5,38), Math.toRadians(270))
+        park = drive.actionBuilder(new Pose2d(55, 51, Math.toRadians(225)))
+                .strafeToLinearHeading(new Vector2d(37.5,8), Math.toRadians(0))
                         .build();
-        basket3 = drive.actionBuilder(new Pose2d(56.5,38,Math.toRadians(258)))
-                .strafeToLinearHeading(new Vector2d(53,50),Math.toRadians(245))
+        park2 = drive.actionBuilder(new Pose2d(39,8,Math.toRadians(0)))
+                .strafeTo(new Vector2d(27,8))
                 .build();
         basket3depo = drive.actionBuilder(new Pose2d(53,50,Math.toRadians(245)))
                 .strafeToLinearHeading(new Vector2d(54,52),Math.toRadians(245))
@@ -570,7 +570,7 @@ public class HinkleyAutoBasket extends LinearOpMode {
             Actions.runBlocking(new SleepAction(0.5));
             Actions.runBlocking(new SequentialAction(intake.inarmback(),
                     intake.horizontalretraction()));
-            Actions.runBlocking(new SleepAction(1.5));
+            Actions.runBlocking(new SleepAction(2));
             Actions.runBlocking(new SequentialAction(outtake.outclawextend()));
             Actions.runBlocking(new SleepAction(0.5));
             Actions.runBlocking(new SequentialAction(
@@ -591,45 +591,14 @@ public class HinkleyAutoBasket extends LinearOpMode {
                     outtake.outclawretract()));
             Actions.runBlocking(new SleepAction(0.5));
             Actions.runBlocking(new SequentialAction(
-                    getblock3,
-                    lift.liftdownclip(),
-                    outtake.outarmdown(),
-                    intake.horizontalretraction(),
-                    intake.inarmup()
-            ));
-            Actions.runBlocking(new SleepAction(1.5));
-            Actions.runBlocking(new SequentialAction(intake.inarmdown()));
-            Actions.runBlocking(new SleepAction(0.5));
-            Actions.runBlocking(new SequentialAction(intake.inclawextend()));
-            Actions.runBlocking(new SleepAction(0.5));
-            Actions.runBlocking(new SequentialAction(intake.inarmback(),
-                    intake.horizontalretraction()));
-            Actions.runBlocking(new SleepAction(1.5));
-            Actions.runBlocking(new SequentialAction(outtake.outclawextend()));
-            Actions.runBlocking(new SleepAction(0.5));
-            Actions.runBlocking(new SequentialAction(
-                    intake.inclawretract()));
-            Actions.runBlocking(new SleepAction(0.05));
-            Actions.runBlocking(new SequentialAction(
-                    intake.horizontalhalfextension()));
-            Actions.runBlocking(new SleepAction(0.2));
-            Actions.runBlocking(new SequentialAction(
-                    intake.transfer(),
-                    basket3,
-                    lift.liftupbasket(),
-                    outtake.outarmup()
-            ));
-            Actions.runBlocking(new SleepAction(2));
-            Actions.runBlocking(new SequentialAction(
-                    basket3depo,
-                    outtake.outclawretract()
-            ));
-            Actions.runBlocking(new SleepAction(0.5));
-            Actions.runBlocking(new SequentialAction(
-                    outtake.outarmdown(),
+                    park,
                     lift.liftdownclip()
-
             ));
+            Actions.runBlocking(new SleepAction(3));
+            Actions.runBlocking(new SequentialAction(
+                    park2
+            ));
+
 
 sleep(30000);
 

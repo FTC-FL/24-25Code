@@ -2,16 +2,12 @@ package org.firstinspires.ftc.teamcode;
 
 import androidx.annotation.NonNull;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -19,15 +15,15 @@ import com.qualcomm.robotcore.hardware.Servo;
 import java.util.ArrayList;
 import java.util.List;
 
-@Config
-@Autonomous(name = "HinkleyAutoBasket", preselectTeleOp = "HinkleyTeleOpBasketSide")
-public class HinkleyAutoBasket extends LinearOpMode {
+@TeleOp(name = "HinkleyTeleOpBasketSideNewHang")
+public class HinkleyTeleOpBasketSideNewHang extends LinearOpMode {
+    private DcMotor RightFront;
+    private DcMotor RightBack;
 
+
+    private DcMotor LeftFront;
+    private DcMotor LeftBack;
 //Mechanisms
-
-
-
-
     public class Intake {
         private Servo rightext;
         private Servo leftext;
@@ -64,8 +60,8 @@ public class HinkleyAutoBasket extends LinearOpMode {
     }public class HorizontalRetraction implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            rightext.setPosition(0.295);
-            leftext.setPosition(0.295);
+            rightext.setPosition(0.292);
+            leftext.setPosition(0.292);
             return false;
         }
     }
@@ -76,8 +72,8 @@ public class HinkleyAutoBasket extends LinearOpMode {
     public class HorizontalHalfExtension implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            rightext.setPosition(0.33);
-            leftext.setPosition(0.33);
+            rightext.setPosition(0.31);
+            leftext.setPosition(0.31);
             return false;
         }
     }
@@ -142,10 +138,11 @@ public class HinkleyAutoBasket extends LinearOpMode {
     public class InWristLeft implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-
-                inwrist.setPosition(0);
-
-
+            if (inwrist.getPosition() > 0){
+                inwrist.setPosition(inwristpos - 0.1);
+                sleep(75);
+                inwristpos = inwristpos - 0.1;
+            }
             return false;
         }
 
@@ -156,10 +153,11 @@ public class HinkleyAutoBasket extends LinearOpMode {
     public class InWristRight implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-
-                inwrist.setPosition(1);
-
-
+            if (inwrist.getPosition() < 1){
+                inwrist.setPosition(inwristpos + 0.1);
+                sleep(75);
+                inwristpos = inwristpos + 0.1;
+            }
             return false;
         }
 
@@ -196,8 +194,10 @@ public class HinkleyAutoBasket extends LinearOpMode {
     public class Transfer implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            inarm.setPosition(inarmdownpos - 0.085);
+            inarm.setPosition(0.6);
             inbelt.setPosition(0.5);
+
+
             return false;
         }
 
@@ -205,23 +205,8 @@ public class HinkleyAutoBasket extends LinearOpMode {
     public Action transfer(){
         return new Transfer();
     }
-        public class Armstart implements Action{
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                inbelt.setPosition(0.5);
-                inarm.setPosition(0.53);
 
-                return false;
-            }
-
-        }
-        public Action armstart(){
-            return new Armstart();
-        }
     }
-
-
-
 
 
 
@@ -242,7 +227,7 @@ public class HinkleyAutoBasket extends LinearOpMode {
         public class OutWristReset implements Action{
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                outwrist.setPosition(0.52);
+                outwrist.setPosition(0.51);
                 return false;
             }
 
@@ -311,18 +296,7 @@ public class HinkleyAutoBasket extends LinearOpMode {
         public Action outarmdown(){
             return new OutArmDown();
         }
-        public class OutArmDownStart implements Action{
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                outarm.setPosition(0.93);
-                outbelt.setPosition(0.489);
-                return false;
-            }
 
-        }
-        public Action outarmdownstart(){
-            return new OutArmDownStart();
-        }
         public class OutArmUp implements Action{
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
@@ -335,7 +309,6 @@ public class HinkleyAutoBasket extends LinearOpMode {
         public Action outarmup(){
             return new OutArmUp();
         }
-
 
     }
 
@@ -361,11 +334,11 @@ public class HinkleyAutoBasket extends LinearOpMode {
 
         }
 
-        public class LiftUpBasket implements Action{
+        public class LiftUp implements Action{
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-
-                    lastliftpos = 3000;
+                if(gamepad2.dpad_up){ //&& liftlistnum > 0 && liftlistnum < 3) {
+                    lastliftpos = 3000; //liftposes.get(liftlistnum + 1);
 
                     Leftlift.setTargetPosition(lastliftpos);
                     Rightlift.setTargetPosition(lastliftpos);
@@ -373,86 +346,32 @@ public class HinkleyAutoBasket extends LinearOpMode {
                     Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     Leftlift.setPower(1);
                     Rightlift.setPower(1);
-                    sleep(100);
 
-
-
-                return false;
-            }
-
-        }
-        public Action liftupbasket(){
-            return new LiftUpBasket();
-        }
-        public class LiftUpClip implements Action{
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-
-                lastliftpos = 600;
-
-                Leftlift.setTargetPosition(lastliftpos);
-                Rightlift.setTargetPosition(lastliftpos);
-                Leftlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                Leftlift.setPower(0.5);
-                Rightlift.setPower(0.5);
-                sleep(100);
-
-
+                }
 
                 return false;
             }
 
         }
-        public Action liftupclip(){
-            return new LiftUpClip();
+        public Action liftup(){
+            return new LiftUp();
         }
-        public class LiftDownClip implements Action{
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
 
-                lastliftpos = 0;
-                sleep(1000);
-                Leftlift.setTargetPosition(lastliftpos);
-                Rightlift.setTargetPosition(lastliftpos);
-                Leftlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                Leftlift.setPower(0.5);
-                Rightlift.setPower(0.5);
-                sleep(100);
-
-
-
-                return false;
-            }
-
-        }
-        public Action liftdownclip(){
-            return new LiftDownClip();
-        }
         public class LiftDown implements Action{
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                if(gamepad2.dpad_down && liftlistnum > 0) {
-                    lastliftpos = liftposes.get(liftlistnum - 1);
+
+                    lastliftpos = 0;
 
                     Leftlift.setTargetPosition(lastliftpos);
                     Rightlift.setTargetPosition(lastliftpos);
                     Leftlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    Leftlift.setPower(0.5);
-                    Rightlift.setPower(0.5);
-                    sleep(100);
-                    liftlistnum = liftlistnum - 1;
-                }
-                else if(gamepad2.back && liftlistnum > 0){
-                    Leftlift.setTargetPosition(liftposes.get(0));
-                    Rightlift.setTargetPosition(liftposes.get(0));
-                    Leftlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    Leftlift.setPower(0.5);
-                    Rightlift.setPower(0.5);
-                }
+                    Leftlift.setPower(0.8);
+                    Rightlift.setPower(0.8);
+
+
+
                 return false;
             }
 
@@ -476,6 +395,51 @@ public class HinkleyAutoBasket extends LinearOpMode {
             return new LiftReset();
         }
 
+        public class LiftUpHang implements Action{
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+
+                lastliftpos = 1000;
+
+                Leftlift.setTargetPosition(lastliftpos);
+                Rightlift.setTargetPosition(lastliftpos);
+                Leftlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                Leftlift.setPower(0.5);
+                Rightlift.setPower(0.5);
+
+
+
+                return false;
+            }
+
+        }
+        public Action liftuphang(){
+            return new LiftUpHang();
+        }
+        public class LiftDownHang implements Action{
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+
+                lastliftpos = 0 ;
+
+                Leftlift.setTargetPosition(lastliftpos);
+                Rightlift.setTargetPosition(lastliftpos);
+                Leftlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                Leftlift.setPower(.5);
+                Rightlift.setPower(.5);
+
+
+
+                return false;
+            }
+
+        }
+        public Action liftdownhang(){
+            return new LiftDownHang();
+        }
+
     }
 
 
@@ -487,134 +451,158 @@ public class HinkleyAutoBasket extends LinearOpMode {
     /**
      * This function is executed when this OpMode is selected from the Driver Station.
      */
-
+    @Override
     public void runOpMode() {
-        Pose2d initialPose = new Pose2d(35, 61.5, Math.toRadians(180));
-        MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
+        double inwristpos;
+        int lastliftpos;
+        int liftamount;
+        float forwardpos;
+        float horizontalpos;
+        float headingpos;
+        boolean liftdown;
+        boolean outclawext;
         Intake intake = new Intake(hardwareMap);
         Outtake outtake = new Outtake(hardwareMap);
         Lift lift = new Lift(hardwareMap);
-
-        Action basket1;
-        Action basket1depo;
-        Action getblock2;
-        Action basket2;
-        Action basket2depo;
-        Action park;
-        Action park2;
-        Action basket3depo;
+        RightFront = hardwareMap.get(DcMotor.class, "RightFront");
+        RightBack = hardwareMap.get(DcMotor.class, "RightBack");
+        LeftFront = hardwareMap.get(DcMotor.class, "LeftFront");
+        LeftBack = hardwareMap.get(DcMotor.class, "LeftBack");
 
 
-         basket1 = drive.actionBuilder(initialPose)
-                        .strafeToLinearHeading(new Vector2d(54,51), Math.toRadians(225))
-                                .build();
-         basket1depo = drive.actionBuilder(new Pose2d(54,51,Math.toRadians(225)))
-                 .strafeTo(new Vector2d(57,52))
-                         .build();
-         getblock2 = drive.actionBuilder(new Pose2d(57,52,Math.toRadians(225)))
-                 .strafeToLinearHeading(new Vector2d(48.25,40),Math.toRadians(269))
-                         .build();
-        basket2 = drive.actionBuilder(new Pose2d(48.25, 40, Math.toRadians(269)))
-                .strafeToLinearHeading(new Vector2d(53,50), Math.toRadians(225))
-                .build();
-        basket2depo = drive.actionBuilder(new Pose2d(53,50,Math.toRadians(225)))
-                .strafeTo(new Vector2d(55,51))
-                .build();
-        park = drive.actionBuilder(new Pose2d(55, 51, Math.toRadians(225)))
-                .strafeToLinearHeading(new Vector2d(37.5,8), Math.toRadians(0))
-                        .build();
-        park2 = drive.actionBuilder(new Pose2d(39,8,Math.toRadians(0)))
-                .strafeTo(new Vector2d(27,8))
-                .build();
-        basket3depo = drive.actionBuilder(new Pose2d(53,50,Math.toRadians(245)))
-                .strafeToLinearHeading(new Vector2d(54,52),Math.toRadians(245))
-                .build();
+        // Put initialization blocks here.
+        RightFront.setDirection(DcMotor.Direction.REVERSE);
+        RightBack.setDirection(DcMotor.Direction.REVERSE);
 
-
-        //init actions
-        Actions.runBlocking(
-                new SequentialAction(
-                        intake.armstart(),
-                        intake.inclawretract(),
-                        outtake.outarmdownstart(),
-                        outtake.outclawextend(),
-                        intake.horizontalretraction(),
-                        intake.inwristzero()
-                )
-        );
+        inwristpos = 0.5;
+        lastliftpos = 2000;
+        liftamount = 250;
+        outclawext = false;
+        liftdown = true;
         waitForStart();
         if (opModeIsActive()) {
+            // Put run blocks here.
+            // set outtake arm on tele start
             Actions.runBlocking(
                     new SequentialAction(
+                        outtake.outarmdown(),
                             outtake.outwristreset(),
-                            basket1,
-                            lift.liftupbasket(),
-                            outtake.outarmup()
-
+                            outtake.outclawretract(),
+                            lift.liftreset()
                     )
             );
-            Actions.runBlocking(new SleepAction(2));
-            Actions.runBlocking(new SequentialAction(
-                    basket1depo,
-                    outtake.outclawretract(),
-                    getblock2,
-                    lift.liftdownclip(),
-                    outtake.outarmdown(),
-                    intake.horizontalretraction(),
-                    intake.inarmup()
-            ));
 
+            while (opModeIsActive()) {
+                // Put loop blocks here.
+                // driving blocks
+                forwardpos = gamepad1.left_stick_y;
+                horizontalpos = -gamepad1.left_stick_x;
+                headingpos = -gamepad1.right_stick_x;
+                RightFront.setPower((-headingpos + (forwardpos - horizontalpos)) * 0.5);
+                RightBack.setPower((-headingpos + forwardpos + horizontalpos) * 0.5);
+                LeftFront.setPower((headingpos + forwardpos + horizontalpos) * 0.5);
+                LeftBack.setPower((headingpos + (forwardpos - horizontalpos)) * 0.5);
+                // intake arm grab position
+                if (gamepad1.x) {
+                    Actions.runBlocking(intake.inarmup());
+                }
+                if (gamepad1.y) {
+                    Actions.runBlocking(intake.inarmdown());
+                }
+                // intake claw blocks
+                if (gamepad1.a) {
+                    Actions.runBlocking(intake.inclawretract());
+                }
+                if (gamepad1.b) {
+                    Actions.runBlocking(intake.inclawextend());
+                }
+                // rotate intake wirst
+                if (gamepad1.left_bumper) {
+                    Actions.runBlocking(intake.inwristleft());
+                }
+                if (gamepad1.right_bumper) {
+                    Actions.runBlocking(intake.inwristright());
+                }
+                if (gamepad1.start) {
+                    Actions.runBlocking(intake.inwristreset());
+                }
+                // return intake for transfer
+                if (gamepad1.back) {
+                    Actions.runBlocking(
+                            new SequentialAction(
+                                    intake.inarmback(),
+                                    intake.inwristzero(),
+                                    intake.horizontalretraction()
+                            )
+                    );
+                }
+                // extend/ retract intake
+                if (gamepad1.right_trigger >= 0.5) {
+                    Actions.runBlocking(intake.horizontalfullextension());
+                }
+                if (gamepad1.left_trigger >= 0.5) {
+                    Actions.runBlocking(intake.horizontalretraction());
+                }
 
+                // raise and lower lift
+                if (gamepad2.dpad_up) {
+                    Actions.runBlocking(
+                      new SequentialAction(
+                              lift.liftup(),
+                              outtake.outarmup()
+                      )
+                    );
+                }
 
-sleep(30000);
+                if (gamepad2.dpad_down) {
+                    Actions.runBlocking(lift.liftdown());
+                }
+                // return lift
+                if (gamepad2.back) {
+                    Actions.runBlocking(
+                            new SequentialAction(
+                                    lift.liftdown(),
+                                    outtake.outarmdown(),
+                                    outtake.outclawretract(),
+                                    outtake.outwristreset()
+                            )
+                    );
+                }
+                // open/ close outtake claw
+                if (gamepad2.x && liftdown) {
+                    Actions.runBlocking(new SequentialAction(outtake.outclawextend()));
+                    sleep(50);
+                    Actions.runBlocking(new SequentialAction(
+                            intake.inclawretract()));
+                            sleep(50);
+                    Actions.runBlocking(new SequentialAction(
+                            intake.horizontalhalfextension()));
+                    sleep(200);
+                    Actions.runBlocking(new SequentialAction(
+                            intake.transfer()));
+                }
+                if (gamepad2.y) {
+                    Actions.runBlocking(outtake.outclawretract());
+                }
+                // rotate outtake wrist
+                if (gamepad2.start) {
+                    Actions.runBlocking(outtake.outwristreset());
+                }
+                if (gamepad2.dpad_right) {
+                    Actions.runBlocking(outtake.outwristright());
+                }
+                if (gamepad2.dpad_left) {
+                    Actions.runBlocking(outtake.outwristleft());
+                }
+                if (gamepad2.a) {
+                    Actions.runBlocking(lift.liftuphang());
+                }
+                if (gamepad2.b) {
+                    Actions.runBlocking(lift.liftdownhang());
+                }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                telemetry.update();
+            }
         }
     }
 }

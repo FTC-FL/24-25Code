@@ -421,7 +421,7 @@ public class HinkleyTeleOpBasketSide extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
 
-                lastliftpos = 450;
+                lastliftpos = 375;
 
                 Leftlift.setTargetPosition(lastliftpos);
                 Rightlift.setTargetPosition(lastliftpos);

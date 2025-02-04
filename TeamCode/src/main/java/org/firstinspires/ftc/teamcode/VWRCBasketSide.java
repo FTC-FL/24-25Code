@@ -215,13 +215,13 @@ public class VWRCBasketSide extends LinearOpMode {
         private Servo outbelt;
         private Servo outwrist;
         private Servo outclaw;
-        double outarmtransferpos;
+         double outarmtransferpos;
         public Outtake(HardwareMap hardwareMap){
             outarm = hardwareMap.get(Servo.class, "outarm");
             outbelt = hardwareMap.get(Servo.class, "outbelt");
             outwrist = hardwareMap.get(Servo.class, "outwrist");
             outclaw = hardwareMap.get(Servo.class, "outclaw");
-            outarmtransferpos = 0.4;
+            outarmtransferpos = 0.15;
         }
 
         public class OutWristReset implements Action{
@@ -300,8 +300,8 @@ public class VWRCBasketSide extends LinearOpMode {
         public class OutArmUp implements Action{
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                outarm.setPosition(outarmtransferpos + 0.185);
-                outbelt.setPosition(0.48);
+                outarm.setPosition(1);
+                outbelt.setPosition(0.46);
                 return false;
             }
 

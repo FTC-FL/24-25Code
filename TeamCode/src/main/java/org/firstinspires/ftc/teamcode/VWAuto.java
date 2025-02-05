@@ -236,7 +236,7 @@ public class VWAuto extends LinearOpMode {
             outbelt = hardwareMap.get(Servo.class, "outbelt");
             outwrist = hardwareMap.get(Servo.class, "outwrist");
             outclaw = hardwareMap.get(Servo.class, "outclaw");
-            outarmtransferpos = 0.165;
+            outarmtransferpos = 0.17;
         }
 
         public class OutWristReset implements Action{
@@ -488,36 +488,25 @@ public class VWAuto extends LinearOpMode {
         Action basket1depo;
         Action getblock2;
         Action basket2;
-        Action basket2depo;
-        Action park;
-        Action park2;
-        Action basket3depo;
+        Action getblock3;
 
 
          basket1 = drive.actionBuilder(initialPose)
-                        .strafeToLinearHeading(new Vector2d(54,50), Math.toRadians(225))
+                        .strafeToLinearHeading(new Vector2d(53,51), Math.toRadians(225))
                                 .build();
-         basket1depo = drive.actionBuilder(new Pose2d(54,50,Math.toRadians(225)))
-                 .strafeTo(new Vector2d(57,52.5))
+         basket1depo = drive.actionBuilder(new Pose2d(53,51,Math.toRadians(225)))
+                 .strafeTo(new Vector2d(56,53.5))
                          .build();
-         getblock2 = drive.actionBuilder(new Pose2d(57,52.5,Math.toRadians(225)))
+         getblock2 = drive.actionBuilder(new Pose2d(56,53.5,Math.toRadians(225)))
                  .strafeToLinearHeading(new Vector2d(44,40.25),Math.toRadians(270))
                          .build();
-        basket2 = drive.actionBuilder(new Pose2d(48.25, 40, Math.toRadians(269)))
-                .strafeToLinearHeading(new Vector2d(53,50), Math.toRadians(225))
+        basket2 = drive.actionBuilder(new Pose2d(44, 40.25, Math.toRadians(270)))
+                .strafeToLinearHeading(new Vector2d(55,53.5), Math.toRadians(225))
                 .build();
-        basket2depo = drive.actionBuilder(new Pose2d(53,50,Math.toRadians(225)))
-                .strafeTo(new Vector2d(55,51))
-                .build();
-        park = drive.actionBuilder(new Pose2d(55, 51, Math.toRadians(225)))
-                .strafeToLinearHeading(new Vector2d(37.5,8), Math.toRadians(0))
+
+        getblock3 = drive.actionBuilder(new Pose2d(55,53.5,Math.toRadians(225)))
+                .strafeToLinearHeading(new Vector2d(54.5, 39.75), Math.toRadians(270))
                         .build();
-        park2 = drive.actionBuilder(new Pose2d(39,8,Math.toRadians(0)))
-                .strafeTo(new Vector2d(27,8))
-                .build();
-        basket3depo = drive.actionBuilder(new Pose2d(53,50,Math.toRadians(245)))
-                .strafeToLinearHeading(new Vector2d(54,52),Math.toRadians(245))
-                .build();
 
 
         //init actions
@@ -569,6 +558,48 @@ public class VWAuto extends LinearOpMode {
             Actions.runBlocking(new SequentialAction(
                     outtake.outclawextend()
             ));
+            Actions.runBlocking(new SleepAction(0.5));
+            Actions.runBlocking(new SequentialAction(
+                    intake.inclawretract(),
+                    intake.horizontalhalfextension()
+            ));
+            Actions.runBlocking(new SleepAction(1));
+            Actions.runBlocking(new SequentialAction(
+                    lift.liftupbasket(),
+                    outtake.outarmup()
+            ));
+            Actions.runBlocking(new SleepAction(2));
+            Actions.runBlocking(new SequentialAction(
+                    basket2,
+                    outtake.outclawretract(),
+                    getblock3,
+                    lift.liftdownclip(),
+                    outtake.outarmdown(),
+                    intake.horizontalretraction(),
+                    intake.inarmup()
+            ));
+            Actions.runBlocking(new SleepAction(1));
+            Actions.runBlocking(new SequentialAction(
+                    intake.inarmdown()
+            ));
+            Actions.runBlocking(new SleepAction(1));
+            Actions.runBlocking(new SequentialAction(
+                    intake.inclawextend()
+            ));
+            Actions.runBlocking(new SleepAction(0.5));
+            Actions.runBlocking(new SequentialAction(
+                    intake.inarmback()
+            ));
+            Actions.runBlocking(new SleepAction(2));
+            Actions.runBlocking(new SequentialAction(
+                    outtake.outclawextend()
+            ));
+            Actions.runBlocking(new SleepAction(0.5));
+            Actions.runBlocking(new SequentialAction(
+                    intake.inclawretract(),
+                    intake.horizontalhalfextension()
+            ));
+
 
 
             sleep(30000);

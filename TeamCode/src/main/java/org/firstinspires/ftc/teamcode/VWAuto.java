@@ -110,7 +110,7 @@ public class VWAuto extends LinearOpMode {
     public class InArmBack implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            inarm.setPosition(inarmdownpos - 0.175);
+            inarm.setPosition(inarmdownpos - 0.179);
             inbelt.setPosition(0.17);
             return false;
         }
@@ -327,7 +327,7 @@ public class VWAuto extends LinearOpMode {
         public class OutArmDown2 implements Action{
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                outarm.setPosition(outarmtransferpos + 0.02);
+                outarm.setPosition(outarmtransferpos - 0.005);
                 outbelt.setPosition(0.56);
                 return false;
             }
@@ -515,10 +515,10 @@ public class VWAuto extends LinearOpMode {
                  .strafeToLinearHeading(new Vector2d(44,40.25),Math.toRadians(270))
                          .build();
         basket2 = drive.actionBuilder(new Pose2d(44, 40.25, Math.toRadians(270)))
-                .strafeToLinearHeading(new Vector2d(55,53.5), Math.toRadians(225))
+                .strafeToLinearHeading(new Vector2d(55.25,54.75), Math.toRadians(225))
                 .build();
 
-        getblock3 = drive.actionBuilder(new Pose2d(55,53.5,Math.toRadians(225)))
+        getblock3 = drive.actionBuilder(new Pose2d(55.25,54.75,Math.toRadians(225)))
                 .strafeToLinearHeading(new Vector2d(54.5, 40.25), Math.toRadians(270))
                         .build();
 
@@ -592,7 +592,9 @@ public class VWAuto extends LinearOpMode {
             Actions.runBlocking(new SleepAction(2));
             Actions.runBlocking(new SequentialAction(
                     basket2,
-                    outtake.outclawretract(),
+                    outtake.outclawretract()));
+                    Actions.runBlocking(new SleepAction(0.5));
+            Actions.runBlocking(new SequentialAction(
                     getblock3,
                     lift.liftdownclip(),
                     outtake.outarmdown2(),
@@ -628,13 +630,16 @@ public class VWAuto extends LinearOpMode {
             Actions.runBlocking(new SleepAction(2));
             Actions.runBlocking(new SequentialAction(
                     basket3,
-                    outtake.outclawretract(),
+                    outtake.outclawretract()
+                            ));
+                    Actions.runBlocking(new SleepAction(0.5));
+            Actions.runBlocking(new SequentialAction(
                     driveback,
                     lift.liftdownclip(),
                     outtake.outarmdown()
 
 
-                    ));
+            ));
 
 
 

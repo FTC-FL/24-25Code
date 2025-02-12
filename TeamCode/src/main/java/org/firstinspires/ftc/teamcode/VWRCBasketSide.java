@@ -60,8 +60,8 @@ public class VWRCBasketSide extends LinearOpMode {
     }public class HorizontalRetraction implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            rightext.setPosition(0.292);
-            leftext.setPosition(0.292);
+            rightext.setPosition(0.295);
+            leftext.setPosition(0.295);
             return false;
         }
     }
@@ -106,7 +106,7 @@ public class VWRCBasketSide extends LinearOpMode {
     public class InArmBack implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            inarm.setPosition(inarmdownpos - 0.175);
+            inarm.setPosition(inarmdownpos - 0.179);
             inbelt.setPosition(0.17);
             return false;
         }
@@ -222,7 +222,7 @@ public class VWRCBasketSide extends LinearOpMode {
             outbelt = hardwareMap.get(Servo.class, "outbelt");
             outwrist = hardwareMap.get(Servo.class, "outwrist");
             outclaw = hardwareMap.get(Servo.class, "outclaw");
-            outarmtransferpos = 0.17;
+            outarmtransferpos = 0.177;
 
         }
 
@@ -290,7 +290,7 @@ public class VWRCBasketSide extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 outarm.setPosition(outarmtransferpos);
-                outbelt.setPosition(0.56);
+                outbelt.setPosition(0.565);
                 return false;
             }
 

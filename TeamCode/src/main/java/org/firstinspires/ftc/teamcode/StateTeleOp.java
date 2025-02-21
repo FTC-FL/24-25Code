@@ -15,8 +15,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import java.util.ArrayList;
 import java.util.List;
 
-@TeleOp(name = "VWRCBasketSide")
-public class VWRCBasketSide extends LinearOpMode {
+@TeleOp(name = "StateTeleOp")
+public class StateTeleOp extends LinearOpMode {
     private DcMotor RightFront;
     private DcMotor RightBack;
 
@@ -421,6 +421,8 @@ public class VWRCBasketSide extends LinearOpMode {
         float headingpos;
         boolean liftdown;
         boolean outclawext;
+        boolean intakein;
+        double drivespeed;
         Intake intake = new Intake(hardwareMap);
         Outtake outtake = new Outtake(hardwareMap);
         Lift lift = new Lift(hardwareMap);
@@ -439,6 +441,7 @@ public class VWRCBasketSide extends LinearOpMode {
         liftamount = 250;
         outclawext = false;
         liftdown = true;
+        intakein = true;
         waitForStart();
         if (opModeIsActive()) {
             // Put run blocks here.
@@ -458,10 +461,19 @@ public class VWRCBasketSide extends LinearOpMode {
                 forwardpos = gamepad1.left_stick_y;
                 horizontalpos = -gamepad1.left_stick_x;
                 headingpos = -gamepad1.right_stick_x;
-                RightFront.setPower((-headingpos + (forwardpos - horizontalpos)) * 0.55);
-                RightBack.setPower((-headingpos + forwardpos + horizontalpos) * 0.55);
-                LeftFront.setPower((headingpos + forwardpos + horizontalpos) * 0.55);
-                LeftBack.setPower((headingpos + (forwardpos - horizontalpos)) * 0.55);
+
+                if (intakein){
+                    drivespeed = 0.6;
+                } else{
+                    drivespeed = 0.4;
+                }
+
+
+
+                RightFront.setPower((-headingpos + (forwardpos - horizontalpos)) * drivespeed);
+                RightBack.setPower((-headingpos + forwardpos + horizontalpos) * drivespeed);
+                LeftFront.setPower((headingpos + forwardpos + horizontalpos) * drivespeed);
+                LeftBack.setPower((headingpos + (forwardpos - horizontalpos)) * drivespeed);
                 // intake arm grab position
                 if (gamepad1.x) {
                     Actions.runBlocking(intake.inarmup());
@@ -488,6 +500,7 @@ public class VWRCBasketSide extends LinearOpMode {
                 }
                 // return intake for transfer
                 if (gamepad1.back) {
+                    intakein = true;
                     Actions.runBlocking(
                             new SequentialAction(
                                     intake.inarmback(),
@@ -495,13 +508,17 @@ public class VWRCBasketSide extends LinearOpMode {
                                     intake.horizontalretraction()
                             )
                     );
+
                 }
                 // extend/ retract intake
                 if (gamepad1.right_trigger >= 0.5) {
+                    intakein = false;
                     Actions.runBlocking(intake.horizontalfullextension());
                 }
                 if (gamepad1.left_trigger >= 0.5) {
+                    intakein = true;
                     Actions.runBlocking(intake.horizontalretraction());
+
                 }
 
                 // raise and lower lift

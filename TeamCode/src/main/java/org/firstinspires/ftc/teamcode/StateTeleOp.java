@@ -11,12 +11,16 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+
 
 import java.util.ArrayList;
 import java.util.List;
 
 @TeleOp(name = "StateTeleOp")
 public class StateTeleOp extends LinearOpMode {
+    private RevBlinkinLedDriver blinkin;
+
     private DcMotor RightFront;
     private DcMotor RightBack;
 
@@ -49,7 +53,7 @@ public class StateTeleOp extends LinearOpMode {
     public class HorizontalFullExtension implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            rightext.setPosition(0.39);
+            rightext.setPosition(0.45);
             leftext.setPosition(0.39);
             return false;
         }
@@ -60,8 +64,8 @@ public class StateTeleOp extends LinearOpMode {
     }public class HorizontalRetraction implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            rightext.setPosition(0.295);
-            leftext.setPosition(0.295);
+            rightext.setPosition(0.36);
+            leftext.setPosition(0.3);
             return false;
         }
     }
@@ -72,7 +76,7 @@ public class StateTeleOp extends LinearOpMode {
     public class HorizontalHalfExtension implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            rightext.setPosition(0.33);
+            rightext.setPosition(0.39);
             leftext.setPosition(0.33);
             return false;
         }
@@ -426,6 +430,7 @@ public class StateTeleOp extends LinearOpMode {
         Intake intake = new Intake(hardwareMap);
         Outtake outtake = new Outtake(hardwareMap);
         Lift lift = new Lift(hardwareMap);
+        blinkin = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
         RightFront = hardwareMap.get(DcMotor.class, "RightFront");
         RightBack = hardwareMap.get(DcMotor.class, "RightBack");
         LeftFront = hardwareMap.get(DcMotor.class, "LeftFront");
@@ -435,6 +440,7 @@ public class StateTeleOp extends LinearOpMode {
         // Put initialization blocks here.
         RightFront.setDirection(DcMotor.Direction.REVERSE);
         RightBack.setDirection(DcMotor.Direction.REVERSE);
+        blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.LAWN_GREEN);
 
         inwristpos = 0.5;
         lastliftpos = 2000;

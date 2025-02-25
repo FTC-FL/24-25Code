@@ -121,7 +121,7 @@ public class StateTeleOp extends LinearOpMode {
     public class InClawExtend implements Action{
             @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-                inclaw.setPosition(0.8);
+                inclaw.setPosition(0.12);
                 return false;
             }
     }
@@ -131,7 +131,7 @@ public class StateTeleOp extends LinearOpMode {
     public class InClawRetract implements Action{
             @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-                inclaw.setPosition(0.15);
+                inclaw.setPosition(0.78);
                 return false;
             }
 
@@ -226,7 +226,7 @@ public class StateTeleOp extends LinearOpMode {
             outbelt = hardwareMap.get(Servo.class, "outbelt");
             outwrist = hardwareMap.get(Servo.class, "outwrist");
             outclaw = hardwareMap.get(Servo.class, "outclaw");
-            outarmtransferpos = 0.177;
+            outarmtransferpos = 0.55;
 
         }
 
@@ -269,7 +269,7 @@ public class StateTeleOp extends LinearOpMode {
         public class OutClawExtend implements Action{
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                outclaw.setPosition(0.78);
+                outclaw.setPosition(0.15);
                 return false;
             }
 
@@ -281,7 +281,7 @@ public class StateTeleOp extends LinearOpMode {
         public class OutClawRetract implements Action{
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                outclaw.setPosition(0.12);
+                outclaw.setPosition(0.45);
                 return false;
             }
 
@@ -294,7 +294,7 @@ public class StateTeleOp extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 outarm.setPosition(outarmtransferpos);
-                outbelt.setPosition(0.565);
+                outbelt.setPosition(0.5);
                 return false;
             }
 
@@ -306,8 +306,8 @@ public class StateTeleOp extends LinearOpMode {
         public class OutArmUp implements Action{
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                outarm.setPosition(1);
-                outbelt.setPosition(0.46);
+                outarm.setPosition(0.82);
+                outbelt.setPosition(0.425);
                 return false;
             }
 
@@ -344,14 +344,14 @@ public class StateTeleOp extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if(gamepad2.dpad_up){ //&& liftlistnum > 0 && liftlistnum < 3) {
-                    lastliftpos = 2200; //liftposes.get(liftlistnum + 1);
+                    lastliftpos = 1100; //liftposes.get(liftlistnum + 1);
 
                     Leftlift.setTargetPosition(lastliftpos);
                     Rightlift.setTargetPosition(lastliftpos);
                     Leftlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    Leftlift.setPower(0.7);
-                    Rightlift.setPower(0.7);
+                    Leftlift.setPower(0.9);
+                    Rightlift.setPower(0.9);
 
                 }
 
@@ -373,8 +373,8 @@ public class StateTeleOp extends LinearOpMode {
                     Rightlift.setTargetPosition(lastliftpos);
                     Leftlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    Leftlift.setPower(0.8);
-                    Rightlift.setPower(0.8);
+                    Leftlift.setPower(0.3);
+                    Rightlift.setPower(0.3);
 
 
 

@@ -331,20 +331,15 @@ public class StateTeleOp extends LinearOpMode {
             Leftlift.setDirection(DcMotor.Direction.REVERSE);
             Rightlift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             Leftlift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            liftlistnum = 2;
-            liftposes.add(0);
-            liftposes.add(500);
-            liftposes.add(750);
-            liftposes.add(2250);
-            lastliftpos = liftposes.get(liftlistnum);
+
 
         }
 
         public class LiftUp implements Action{
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                if(gamepad2.dpad_up){ //&& liftlistnum > 0 && liftlistnum < 3) {
-                    lastliftpos = 1100; //liftposes.get(liftlistnum + 1);
+                if(gamepad2.dpad_up){
+                    lastliftpos = 1100;
 
                     Leftlift.setTargetPosition(lastliftpos);
                     Rightlift.setTargetPosition(lastliftpos);

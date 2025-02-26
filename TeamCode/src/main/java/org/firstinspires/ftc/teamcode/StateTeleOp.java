@@ -332,6 +332,8 @@ public class StateTeleOp extends LinearOpMode {
                 telemetry.addData("TargetPos", lastliftpos);
                 telemetry.addData("LeftCurrPos", Leftlift.getCurrentPosition());
                 telemetry.addData("RightCurrPos", Rightlift.getCurrentPosition());
+                telemetry.addData("LeftMotorpower", Leftlift.getController().getMotorPower(0));
+                telemetry.addData("RightMotorpower", Rightlift.getController().getMotorPower(1));
                 telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
                 return false;
             }

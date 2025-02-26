@@ -17,6 +17,7 @@ import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -239,20 +240,20 @@ public class StateTeleOp extends LinearOpMode {
 
 
     public class Lift{
-        private DcMotor Leftlift;
-        private DcMotor Rightlift;
+        public DcMotorEx Leftlift;
+        public DcMotorEx Rightlift;
         int lastliftpos;
-        double liftpower;
+
 
 
         public Lift(HardwareMap hardwareMap){
             Leftlift = hardwareMap.get(DcMotorEx.class, "Leftlift");
             Rightlift = hardwareMap.get(DcMotorEx.class, "Rightlift");
-            Leftlift.setDirection(DcMotor.Direction.REVERSE);
-            Rightlift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            Leftlift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            Leftlift.setDirection(DcMotorEx.Direction.REVERSE);
+            Rightlift.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+            Leftlift.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
-            liftpower = Leftlift.getCurrent();
+
         }
 
         public class LiftUp implements Action{
@@ -267,6 +268,7 @@ public class StateTeleOp extends LinearOpMode {
                     Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     Leftlift.setPower(0.9);
                     Rightlift.setPower(0.9);
+
 
                 }
 
@@ -315,7 +317,19 @@ public class StateTeleOp extends LinearOpMode {
         public Action liftreset(){
             return new LiftReset();
         }
+        public class LiftCurrent implements Action{
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
 
+                telemetry.addData("Leftliftcurrent", Leftlift.getCurrent(CurrentUnit.AMPS));
+                telemetry.addData("Rightliftcurrent", Rightlift.getCurrent(CurrentUnit.AMPS));
+                return false;
+            }
+
+        }
+        public Action liftcurrent(){
+            return new LiftReset();
+        }
 
 
 
@@ -337,9 +351,10 @@ public class StateTeleOp extends LinearOpMode {
         float horizontalpos;
         float headingpos;
         boolean liftdown;
-
+        boolean moveoutarmup;
         boolean intakein;
         double drivespeed;
+        double liftpower;
         Intake intake = new Intake(hardwareMap);
         Outtake outtake = new Outtake(hardwareMap);
         Lift lift = new Lift(hardwareMap);
@@ -355,7 +370,7 @@ public class StateTeleOp extends LinearOpMode {
         RightBack.setDirection(DcMotor.Direction.REVERSE);
         blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.LAWN_GREEN);
 
-
+        moveoutarmup = false;
         liftdown = true;
         intakein = true;
         ElapsedTime timer1 = null;
@@ -372,6 +387,7 @@ public class StateTeleOp extends LinearOpMode {
                             lift.liftreset()
                     )
             );
+            timer2 = new ElapsedTime();
 
             while (opModeIsActive()) {
                 // Put loop blocks here.
@@ -379,6 +395,7 @@ public class StateTeleOp extends LinearOpMode {
                 forwardpos = gamepad1.left_stick_y;
                 horizontalpos = -gamepad1.left_stick_x;
                 headingpos = -gamepad1.right_stick_x;
+
 
                 if (intakein){
                     drivespeed = 0.6;
@@ -433,22 +450,17 @@ public class StateTeleOp extends LinearOpMode {
 
                 // raise and lower lift
                 if (gamepad2.dpad_up) {
-                    Actions.runBlocking(
-                      new SequentialAction(
-                              lift.liftup()
-                      )
-                    );
+                    Actions.runBlocking(new SequentialAction(lift.liftup()));
                     timer2 = new ElapsedTime();
-                    if (timer2.time() > 200){
-                        Actions.runBlocking(new SequentialAction(
-                                outtake.outarmup()
-                        ));
-                    }
+                    moveoutarmup = true;
                 }
-
+                if (timer2.time() > 0.2 && moveoutarmup) {
+                    Actions.runBlocking(new SequentialAction(outtake.outarmup()));
+                }
 
                 if (gamepad2.dpad_down) {
                     Actions.runBlocking(lift.liftdown());
+                    moveoutarmup = false;
                 }
                 // return lift
                 if (gamepad2.back) {
@@ -460,6 +472,7 @@ public class StateTeleOp extends LinearOpMode {
 
                             )
                     );
+                    moveoutarmup = false;
                 }
                 // open/ close outtake claw
                 if (gamepad2.x && liftdown) {

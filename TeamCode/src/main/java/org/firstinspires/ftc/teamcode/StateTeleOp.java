@@ -469,7 +469,7 @@ public class StateTeleOp extends LinearOpMode {
                             intake.inclawretract()));
                     timer1 = new ElapsedTime();
 
-                    if (timer1.time() > 75){
+                    if (timer1.time() > 50){
                         Actions.runBlocking(new SequentialAction(
                                 intake.horizontalhalfextension()
                         ));

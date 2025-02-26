@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -241,16 +242,17 @@ public class StateTeleOp extends LinearOpMode {
         private DcMotor Leftlift;
         private DcMotor Rightlift;
         int lastliftpos;
+        double liftpower;
 
 
         public Lift(HardwareMap hardwareMap){
-            Leftlift = hardwareMap.get(DcMotor.class, "Leftlift");
-            Rightlift = hardwareMap.get(DcMotor.class, "Rightlift");
+            Leftlift = hardwareMap.get(DcMotorEx.class, "Leftlift");
+            Rightlift = hardwareMap.get(DcMotorEx.class, "Rightlift");
             Leftlift.setDirection(DcMotor.Direction.REVERSE);
             Rightlift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             Leftlift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-
+            liftpower = Leftlift.getCurrent();
         }
 
         public class LiftUp implements Action{

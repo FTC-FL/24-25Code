@@ -9,9 +9,12 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 
 
 import java.util.ArrayList;
@@ -31,7 +34,7 @@ public class StateTeleOp extends LinearOpMode {
     public class Intake {
         private Servo rightext;
         private Servo leftext;
-        private Servo inwrist;
+
         private Servo inclaw;
         private Servo inarm;
         private Servo inbelt;
@@ -43,10 +46,10 @@ public class StateTeleOp extends LinearOpMode {
             inarm = hardwareMap.get(Servo.class, "inarm");
             inbelt = hardwareMap.get(Servo.class, "inbelt");
             inclaw = hardwareMap.get(Servo.class, "inclaw");
-            inwrist = hardwareMap.get(Servo.class, "inwrist");
+
             leftext = hardwareMap.get(Servo.class, "leftext");
             rightext.setDirection(Servo.Direction.REVERSE);
-            inwristpos = 0.5;
+
             inarmdownpos = 0.7;
         }
         //Actions
@@ -139,61 +142,10 @@ public class StateTeleOp extends LinearOpMode {
     public Action inclawretract(){
             return new InClawRetract();
     }
-    public class InWristLeft implements Action{
-        @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
-            if (inwrist.getPosition() > 0){
-                inwrist.setPosition(inwristpos - 0.1);
-                sleep(75);
-                inwristpos = inwristpos - 0.1;
-            }
-            return false;
-        }
 
-    }
-    public Action inwristleft(){
-        return new InWristLeft();
-    }
-    public class InWristRight implements Action{
-        @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
-            if (inwrist.getPosition() < 1){
-                inwrist.setPosition(inwristpos + 0.1);
-                sleep(75);
-                inwristpos = inwristpos + 0.1;
-            }
-            return false;
-        }
 
-    }
-    public Action inwristright(){
-        return new InWristRight();
-    }
-    public class InWristReset implements Action{
-        @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
-            inwrist.setPosition(0.5);
-            sleep(75);
-            inwristpos = 0.5;
-            return false;
-        }
 
-    }
-    public Action inwristreset(){
-        return new InWristReset();
-    }
 
-    public class InWristZero implements Action{
-        @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
-            inwrist.setPosition(0);
-            return false;
-        }
-
-    }
-    public Action inwristzero(){
-        return new InWristZero();
-    }
 
     public class Transfer implements Action{
         @Override
@@ -217,53 +169,19 @@ public class StateTeleOp extends LinearOpMode {
     public class Outtake{
         private Servo outarm;
         private Servo outbelt;
-        private Servo outwrist;
+
         private Servo outclaw;
          double outarmtransferpos;
 
         public Outtake(HardwareMap hardwareMap){
             outarm = hardwareMap.get(Servo.class, "outarm");
             outbelt = hardwareMap.get(Servo.class, "outbelt");
-            outwrist = hardwareMap.get(Servo.class, "outwrist");
+
             outclaw = hardwareMap.get(Servo.class, "outclaw");
             outarmtransferpos = 0.55;
 
         }
 
-        public class OutWristReset implements Action{
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                outwrist.setPosition(0.51);
-                return false;
-            }
-
-        }
-        public Action outwristreset(){
-            return new OutWristReset();
-        }
-
-        public class OutWristLeft implements Action{
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                outwrist.setPosition(0.17);
-                return false;
-            }
-
-        }
-        public Action outwristleft(){
-            return new OutWristLeft();
-        }
-        public class OutWristRight implements Action{
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                outwrist.setPosition(0.85);
-                return false;
-            }
-
-        }
-        public Action outwristright(){
-            return new OutWristRight();
-        }
 
 
         public class OutClawExtend implements Action{
@@ -323,8 +241,8 @@ public class StateTeleOp extends LinearOpMode {
         private DcMotor Leftlift;
         private DcMotor Rightlift;
         int lastliftpos;
-        int liftlistnum;
-        List<Integer> liftposes = new ArrayList<>();
+
+
         public Lift(HardwareMap hardwareMap){
             Leftlift = hardwareMap.get(DcMotor.class, "Leftlift");
             Rightlift = hardwareMap.get(DcMotor.class, "Rightlift");
@@ -412,14 +330,12 @@ public class StateTeleOp extends LinearOpMode {
      */
     @Override
     public void runOpMode() {
-        double inwristpos;
-        int lastliftpos;
-        int liftamount;
+
         float forwardpos;
         float horizontalpos;
         float headingpos;
         boolean liftdown;
-        boolean outclawext;
+
         boolean intakein;
         double drivespeed;
         Intake intake = new Intake(hardwareMap);
@@ -437,12 +353,11 @@ public class StateTeleOp extends LinearOpMode {
         RightBack.setDirection(DcMotor.Direction.REVERSE);
         blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.LAWN_GREEN);
 
-        inwristpos = 0.5;
-        lastliftpos = 2000;
-        liftamount = 250;
-        outclawext = false;
+
         liftdown = true;
         intakein = true;
+        ElapsedTime timer1 = null;
+        ElapsedTime timer2 = null;
         waitForStart();
         if (opModeIsActive()) {
             // Put run blocks here.
@@ -450,7 +365,7 @@ public class StateTeleOp extends LinearOpMode {
             Actions.runBlocking(
                     new SequentialAction(
                         outtake.outarmdown(),
-                            outtake.outwristreset(),
+
                             outtake.outclawretract(),
                             lift.liftreset()
                     )
@@ -489,23 +404,15 @@ public class StateTeleOp extends LinearOpMode {
                 if (gamepad1.b) {
                     Actions.runBlocking(intake.inclawextend());
                 }
-                // rotate intake wirst
-                if (gamepad1.left_bumper) {
-                    Actions.runBlocking(intake.inwristleft());
-                }
-                if (gamepad1.right_bumper) {
-                    Actions.runBlocking(intake.inwristright());
-                }
-                if (gamepad1.start) {
-                    Actions.runBlocking(intake.inwristreset());
-                }
+
+
                 // return intake for transfer
                 if (gamepad1.back) {
                     intakein = true;
                     Actions.runBlocking(
                             new SequentialAction(
                                     intake.inarmback(),
-                                    intake.inwristzero(),
+
                                     intake.horizontalretraction()
                             )
                     );
@@ -526,11 +433,17 @@ public class StateTeleOp extends LinearOpMode {
                 if (gamepad2.dpad_up) {
                     Actions.runBlocking(
                       new SequentialAction(
-                              lift.liftup(),
-                              outtake.outarmup()
+                              lift.liftup()
                       )
                     );
+                    timer2 = new ElapsedTime();
+                    if (timer2.time() > 200){
+                        Actions.runBlocking(new SequentialAction(
+                                outtake.outarmup()
+                        ));
+                    }
                 }
+
 
                 if (gamepad2.dpad_down) {
                     Actions.runBlocking(lift.liftdown());
@@ -541,36 +454,34 @@ public class StateTeleOp extends LinearOpMode {
                             new SequentialAction(
                                     lift.liftdown(),
                                     outtake.outarmdown(),
-                                    outtake.outclawretract(),
-                                    outtake.outwristreset()
+                                    outtake.outclawretract()
+
                             )
                     );
                 }
                 // open/ close outtake claw
                 if (gamepad2.x && liftdown) {
+
+
                     Actions.runBlocking(new SequentialAction(outtake.outclawextend()));
-                    sleep(75);
+
                     Actions.runBlocking(new SequentialAction(
                             intake.inclawretract()));
-                            sleep(200);
-                            Actions.runBlocking(new SequentialAction(
-                                    intake.horizontalhalfextension()
-                            ));
+                    timer1 = new ElapsedTime();
 
+                    if (timer1.time() > 75){
+                        Actions.runBlocking(new SequentialAction(
+                                intake.horizontalhalfextension()
+                        ));
+                    }
                 }
+
+
                 if (gamepad2.y) {
                     Actions.runBlocking(outtake.outclawretract());
                 }
-                // rotate outtake wrist
-                if (gamepad2.start) {
-                    Actions.runBlocking(outtake.outwristreset());
-                }
-                if (gamepad2.dpad_right) {
-                    Actions.runBlocking(outtake.outwristright());
-                }
-                if (gamepad2.dpad_left) {
-                    Actions.runBlocking(outtake.outwristleft());
-                }
+
+
 
 
                 telemetry.update();

@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.SequentialAction;
@@ -17,10 +19,8 @@ import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @TeleOp(name = "StateTeleOp")
 public class StateTeleOp extends LinearOpMode {
@@ -243,6 +243,8 @@ public class StateTeleOp extends LinearOpMode {
         public DcMotorEx Leftlift;
         public DcMotorEx Rightlift;
         int lastliftpos;
+        double leftliftcurrent;
+        double rightliftcurrent;
 
 
 
@@ -318,22 +320,31 @@ public class StateTeleOp extends LinearOpMode {
             return new LiftReset();
         }
         public class LiftCurrent implements Action{
+
+
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
 
-                telemetry.addData("Leftliftcurrent", Leftlift.getCurrent(CurrentUnit.AMPS));
-                telemetry.addData("Rightliftcurrent", Rightlift.getCurrent(CurrentUnit.AMPS));
+                leftliftcurrent = Leftlift.getCurrent(CurrentUnit.AMPS);
+                rightliftcurrent = Rightlift.getCurrent(CurrentUnit.AMPS);
+                telemetry.addData("Leftliftcurrent", leftliftcurrent);
+                telemetry.addData("Rightliftcurrent", rightliftcurrent);
+                telemetry.addData("TargetPos", lastliftpos);
+                telemetry.addData("LeftCurrPos", Leftlift.getCurrentPosition());
+                telemetry.addData("RightCurrPos", Rightlift.getCurrentPosition());
+                telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
                 return false;
             }
 
         }
         public Action liftcurrent(){
-            return new LiftReset();
+            return new LiftCurrent();
         }
 
 
 
     }
+
 
 
 
@@ -395,7 +406,7 @@ public class StateTeleOp extends LinearOpMode {
                 forwardpos = gamepad1.left_stick_y;
                 horizontalpos = -gamepad1.left_stick_x;
                 headingpos = -gamepad1.right_stick_x;
-
+                Actions.runBlocking(new SequentialAction(lift.liftcurrent()));
 
                 if (intakein){
                     drivespeed = 0.6;

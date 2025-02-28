@@ -52,7 +52,7 @@ public class StateTeleOp extends LinearOpMode {
             leftext = hardwareMap.get(Servo.class, "leftext");
             rightext.setDirection(Servo.Direction.REVERSE);
 
-            inarmdownpos = 0.7;
+            inarmdownpos = 0.675;
         }
         //Actions
     public class HorizontalFullExtension implements Action{
@@ -94,7 +94,7 @@ public class StateTeleOp extends LinearOpMode {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             inarm.setPosition(inarmdownpos);
-            inbelt.setPosition(0.83);
+            inbelt.setPosition(0.88);
             return false;
         }
     }
@@ -104,8 +104,8 @@ public class StateTeleOp extends LinearOpMode {
     public class InArmUp implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            inarm.setPosition(inarmdownpos - 0.045);
-            inbelt.setPosition(0.9);
+            inarm.setPosition(inarmdownpos - 0.02);
+            inbelt.setPosition(0.93);
             return false;
         }
     }
@@ -115,8 +115,8 @@ public class StateTeleOp extends LinearOpMode {
     public class InArmBack implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            inarm.setPosition(inarmdownpos - 0.179);
-            inbelt.setPosition(0.17);
+            inarm.setPosition(inarmdownpos - 0.165);
+            inbelt.setPosition(0.25);
             return false;
         }
     }
@@ -126,7 +126,7 @@ public class StateTeleOp extends LinearOpMode {
     public class InClawExtend implements Action{
             @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-                inclaw.setPosition(0.12);
+                inclaw.setPosition(0.9);
                 return false;
             }
     }
@@ -136,7 +136,7 @@ public class StateTeleOp extends LinearOpMode {
     public class InClawRetract implements Action{
             @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-                inclaw.setPosition(0.78);
+                inclaw.setPosition(0.25);
                 return false;
             }
 
@@ -180,7 +180,7 @@ public class StateTeleOp extends LinearOpMode {
             outbelt = hardwareMap.get(Servo.class, "outbelt");
 
             outclaw = hardwareMap.get(Servo.class, "outclaw");
-            outarmtransferpos = 0.55;
+            outarmtransferpos = 0.53;
 
         }
 
@@ -214,7 +214,7 @@ public class StateTeleOp extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 outarm.setPosition(outarmtransferpos);
-                outbelt.setPosition(0.5);
+                outbelt.setPosition(0.45);
                 return false;
             }
 
@@ -368,6 +368,7 @@ public class StateTeleOp extends LinearOpMode {
         boolean intakein;
         double drivespeed;
         double liftpower;
+        boolean moveinarm;
         Intake intake = new Intake(hardwareMap);
         Outtake outtake = new Outtake(hardwareMap);
         Lift lift = new Lift(hardwareMap);
@@ -383,6 +384,7 @@ public class StateTeleOp extends LinearOpMode {
         RightBack.setDirection(DcMotor.Direction.REVERSE);
         blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.LAWN_GREEN);
 
+        moveinarm = false;
         moveoutarmup = false;
         liftdown = true;
         intakein = true;
@@ -401,7 +403,7 @@ public class StateTeleOp extends LinearOpMode {
                     )
             );
             timer2 = new ElapsedTime();
-
+            timer1 = new ElapsedTime();
             while (opModeIsActive()) {
                 // Put loop blocks here.
                 // driving blocks
@@ -425,9 +427,11 @@ public class StateTeleOp extends LinearOpMode {
                 // intake arm grab position
                 if (gamepad1.x) {
                     Actions.runBlocking(intake.inarmup());
+                    moveinarm = false;
                 }
                 if (gamepad1.y) {
                     Actions.runBlocking(intake.inarmdown());
+                    moveinarm = false;
                 }
                 // intake claw blocks
                 if (gamepad1.a) {
@@ -443,12 +447,13 @@ public class StateTeleOp extends LinearOpMode {
                     intakein = true;
                     Actions.runBlocking(
                             new SequentialAction(
-                                    intake.inarmback(),
+                                    intake.inarmback()));
+                    timer1 = new ElapsedTime();
+                    moveinarm = true;
 
-                                    intake.horizontalretraction()
-                            )
-                    );
-
+                }
+                if (timer1.time() > 1 && moveinarm) {
+                    Actions.runBlocking(new SequentialAction(intake.horizontalretraction()));
                 }
                 // extend/ retract intake
                 if (gamepad1.right_trigger >= 0.5) {

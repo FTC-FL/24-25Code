@@ -270,7 +270,7 @@ public class StateTeleOp extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 outarm.setPosition(outarmtransferpos);
-                outbelt.setPosition(0.45);
+                outbelt.setPosition(0.455);
                 return false;
             }
 

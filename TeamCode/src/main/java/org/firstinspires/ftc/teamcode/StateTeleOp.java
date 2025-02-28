@@ -318,14 +318,14 @@ public class StateTeleOp extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if(gamepad2.dpad_up){
-                    lastliftpos = 1100;
+                    lastliftpos = 3000;
 
                     Leftlift.setTargetPosition(lastliftpos);
                     Rightlift.setTargetPosition(lastliftpos);
                     Leftlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    Leftlift.setPower(0.9);
-                    Rightlift.setPower(0.9);
+                    Leftlift.setPower(1);
+                    Rightlift.setPower(1);
 
 
                 }
@@ -348,8 +348,8 @@ public class StateTeleOp extends LinearOpMode {
                     Rightlift.setTargetPosition(lastliftpos);
                     Leftlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     Rightlift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    Leftlift.setPower(0.3);
-                    Rightlift.setPower(0.3);
+                    Leftlift.setPower(0.7);
+                    Rightlift.setPower(0.7);
 
 
 
@@ -449,6 +449,7 @@ public class StateTeleOp extends LinearOpMode {
         ElapsedTime timer1 = null;
         ElapsedTime timer2 = null;
         ElapsedTime timer3 = null;
+        ElapsedTime timecheck = null;
         waitForStart();
         if (opModeIsActive()) {
             // Put run blocks here.
@@ -467,6 +468,7 @@ public class StateTeleOp extends LinearOpMode {
             while (opModeIsActive()) {
                 // Put loop blocks here.
                 // driving blocks
+                timecheck = new ElapsedTime();
                 forwardpos = gamepad1.left_stick_y;
                 horizontalpos = -gamepad1.left_stick_x;
                 headingpos = -gamepad1.right_stick_x;
@@ -583,7 +585,8 @@ public class StateTeleOp extends LinearOpMode {
                     Actions.runBlocking(outtake.outclawretract());
                 }
 
-
+                telemetry.addData("looptime", timecheck.time());
+                timecheck.reset();
 
 
                 telemetry.update();

@@ -36,7 +36,7 @@ public class StateTeleOp extends LinearOpMode {
     public class Intake {
         private Servo rightext;
         private Servo leftext;
-
+        private Servo inwrist;
         private Servo inclaw;
         private Servo inarm;
         private Servo inbelt;
@@ -48,7 +48,7 @@ public class StateTeleOp extends LinearOpMode {
             inarm = hardwareMap.get(Servo.class, "inarm");
             inbelt = hardwareMap.get(Servo.class, "inbelt");
             inclaw = hardwareMap.get(Servo.class, "inclaw");
-
+            inwrist = hardwareMap.get(Servo.class, "inwrist");
             leftext = hardwareMap.get(Servo.class, "leftext");
             rightext.setDirection(Servo.Direction.REVERSE);
 
@@ -147,7 +147,63 @@ public class StateTeleOp extends LinearOpMode {
 
 
 
+    public class InWristReset implements Action{
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            inwristpos = 0.37;
+            inwrist.setPosition(inwristpos);
+            return false;
+        }
 
+    }
+    public Action inwristreset(){
+        return new InWristReset();
+    }
+    public class InWristZero implements Action{
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            inwristpos = 0.03;
+            inwrist.setPosition(inwristpos);
+            return false;
+        }
+
+    }
+    public Action inwristzero(){
+        return new InWristZero();
+    }
+    public class InWristRight implements Action{
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (inwristpos < 0.71 ){
+                inwristpos = inwristpos + 0.05;
+                inwrist.setPosition(inwristpos);
+            }
+
+
+            return false;
+        }
+
+    }
+    public Action inwristright(){
+        return new InWristRight();
+    }
+
+    public class InWristLeft implements Action{
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (inwristpos > 0.03 ){
+                inwristpos = inwristpos - 0.05;
+                inwrist.setPosition(inwristpos);
+            }
+
+
+            return false;
+        }
+
+    }
+    public Action inwristleft(){
+        return new InWristLeft();
+    }
 
     public class Transfer implements Action{
         @Override
@@ -369,6 +425,7 @@ public class StateTeleOp extends LinearOpMode {
         double drivespeed;
         double liftpower;
         boolean moveinarm;
+        boolean moveintake;
         Intake intake = new Intake(hardwareMap);
         Outtake outtake = new Outtake(hardwareMap);
         Lift lift = new Lift(hardwareMap);
@@ -388,8 +445,10 @@ public class StateTeleOp extends LinearOpMode {
         moveoutarmup = false;
         liftdown = true;
         intakein = true;
+        moveintake = false;
         ElapsedTime timer1 = null;
         ElapsedTime timer2 = null;
+        ElapsedTime timer3 = null;
         waitForStart();
         if (opModeIsActive()) {
             // Put run blocks here.
@@ -404,6 +463,7 @@ public class StateTeleOp extends LinearOpMode {
             );
             timer2 = new ElapsedTime();
             timer1 = new ElapsedTime();
+            timer3 = new ElapsedTime();
             while (opModeIsActive()) {
                 // Put loop blocks here.
                 // driving blocks
@@ -427,11 +487,11 @@ public class StateTeleOp extends LinearOpMode {
                 // intake arm grab position
                 if (gamepad1.x) {
                     Actions.runBlocking(intake.inarmup());
-                    moveinarm = false;
+
                 }
                 if (gamepad1.y) {
                     Actions.runBlocking(intake.inarmdown());
-                    moveinarm = false;
+
                 }
                 // intake claw blocks
                 if (gamepad1.a) {
@@ -440,6 +500,16 @@ public class StateTeleOp extends LinearOpMode {
                 if (gamepad1.b) {
                     Actions.runBlocking(intake.inclawextend());
                 }
+                if (gamepad1.right_bumper){
+                    Actions.runBlocking(intake.inwristright());
+                }
+                if (gamepad1.left_bumper){
+                    Actions.runBlocking(intake.inwristleft());
+                }
+                if (gamepad1.start){
+                    Actions.runBlocking(intake.inwristreset());
+                }
+
 
 
                 // return intake for transfer
@@ -447,13 +517,15 @@ public class StateTeleOp extends LinearOpMode {
                     intakein = true;
                     Actions.runBlocking(
                             new SequentialAction(
-                                    intake.inarmback()));
+                                    intake.inarmback(),
+                                    intake.inwristzero()));
                     timer1 = new ElapsedTime();
                     moveinarm = true;
 
                 }
-                if (timer1.time() > 1 && moveinarm) {
+                if (timer1.time() > 0.85 && moveinarm) {
                     Actions.runBlocking(new SequentialAction(intake.horizontalretraction()));
+                    moveinarm = false;
                 }
                 // extend/ retract intake
                 if (gamepad1.right_trigger >= 0.5) {
@@ -474,11 +546,12 @@ public class StateTeleOp extends LinearOpMode {
                 }
                 if (timer2.time() > 0.2 && moveoutarmup) {
                     Actions.runBlocking(new SequentialAction(outtake.outarmup()));
+                    moveoutarmup = false;
                 }
 
                 if (gamepad2.dpad_down) {
                     Actions.runBlocking(lift.liftdown());
-                    moveoutarmup = false;
+
                 }
                 // return lift
                 if (gamepad2.back) {
@@ -490,25 +563,21 @@ public class StateTeleOp extends LinearOpMode {
 
                             )
                     );
-                    moveoutarmup = false;
+
                 }
                 // open/ close outtake claw
                 if (gamepad2.x && liftdown) {
 
 
-                    Actions.runBlocking(new SequentialAction(outtake.outclawextend()));
+                    Actions.runBlocking(new SequentialAction(outtake.outclawextend(),intake.inclawretract()));
 
-                    Actions.runBlocking(new SequentialAction(
-                            intake.inclawretract()));
-                    timer1 = new ElapsedTime();
+                    moveintake = true;
 
-                    if (timer1.time() > 50){
-                        Actions.runBlocking(new SequentialAction(
-                                intake.horizontalhalfextension()
-                        ));
-                    }
                 }
-
+                if (timer3.time() >= 0.05 && moveintake){
+                    Actions.runBlocking(intake.horizontalhalfextension());
+                    moveintake = false;
+                }
 
                 if (gamepad2.y) {
                     Actions.runBlocking(outtake.outclawretract());

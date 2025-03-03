@@ -298,7 +298,10 @@ public class StateTeleOp extends LinearOpMode {
     public class Lift{
         public DcMotorEx Leftlift;
         public DcMotorEx Rightlift;
+        public DcMotor LeftHang;
+        public DcMotor RightHang;
         int lastliftpos;
+        int lasthangpos;
         double leftliftcurrent;
         double rightliftcurrent;
 
@@ -307,6 +310,8 @@ public class StateTeleOp extends LinearOpMode {
         public Lift(HardwareMap hardwareMap){
             Leftlift = hardwareMap.get(DcMotorEx.class, "Leftlift");
             Rightlift = hardwareMap.get(DcMotorEx.class, "Rightlift");
+            LeftHang = hardwareMap.get(DcMotorEx.class, "Lefthang");
+            RightHang = hardwareMap.get(DcMotorEx.class, "Righthang");
             Leftlift.setDirection(DcMotorEx.Direction.REVERSE);
             Rightlift.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
             Leftlift.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
@@ -361,6 +366,72 @@ public class StateTeleOp extends LinearOpMode {
             return new LiftDown();
         }
 
+        public class HangDown implements Action{
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+
+                lasthangpos = 0;
+
+                LeftHang.setTargetPosition(lasthangpos);
+                RightHang.setTargetPosition(lasthangpos);
+                LeftHang.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                RightHang.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                LeftHang.setPower(0.9);
+                RightHang.setPower(0.9);
+
+
+
+                return false;
+            }
+
+        }
+        public Action hangdown(){
+            return new HangDown();
+        }
+        public class HangZero implements Action{
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+
+                lasthangpos = 0;
+
+                LeftHang.setTargetPosition(lasthangpos);
+                RightHang.setTargetPosition(lasthangpos);
+                LeftHang.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                RightHang.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                LeftHang.setPower(0.9);
+                RightHang.setPower(0.9);
+
+
+
+                return false;
+            }
+
+        }
+        public Action hangzero(){
+            return new HangZero();
+        }
+        public class HangUp implements Action{
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+
+                lasthangpos = 2950;
+
+                LeftHang.setTargetPosition(lasthangpos);
+                RightHang.setTargetPosition(lasthangpos);
+                LeftHang.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                RightHang.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                LeftHang.setPower(0.9);
+                RightHang.setPower(0.9);
+
+
+
+                return false;
+            }
+
+        }
+        public Action hangup(){
+            return new HangUp();
+        }
 
         public class LiftReset implements Action{
             @Override
@@ -368,6 +439,8 @@ public class StateTeleOp extends LinearOpMode {
 
                 Leftlift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 Rightlift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                LeftHang.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                RightHang.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 return false;
             }
 
@@ -375,6 +448,7 @@ public class StateTeleOp extends LinearOpMode {
         public Action liftreset(){
             return new LiftReset();
         }
+
         public class LiftCurrent implements Action{
 
 
@@ -426,6 +500,7 @@ public class StateTeleOp extends LinearOpMode {
         double liftpower;
         boolean moveinarm;
         boolean moveintake;
+        boolean redlights;
         Intake intake = new Intake(hardwareMap);
         Outtake outtake = new Outtake(hardwareMap);
         Lift lift = new Lift(hardwareMap);
@@ -439,17 +514,18 @@ public class StateTeleOp extends LinearOpMode {
         // Put initialization blocks here.
         RightFront.setDirection(DcMotor.Direction.REVERSE);
         RightBack.setDirection(DcMotor.Direction.REVERSE);
-        blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.LAWN_GREEN);
 
+        redlights = true;
         moveinarm = false;
         moveoutarmup = false;
         liftdown = true;
         intakein = true;
         moveintake = false;
-        ElapsedTime timer1 = null;
-        ElapsedTime timer2 = null;
-        ElapsedTime timer3 = null;
-        ElapsedTime timecheck = null;
+        ElapsedTime timer1;
+        ElapsedTime timer2;
+        ElapsedTime timer3;
+        ElapsedTime timecheck;
+        ElapsedTime endgame;
         waitForStart();
         if (opModeIsActive()) {
             // Put run blocks here.
@@ -457,7 +533,6 @@ public class StateTeleOp extends LinearOpMode {
             Actions.runBlocking(
                     new SequentialAction(
                         outtake.outarmdown(),
-
                             outtake.outclawretract(),
                             lift.liftreset()
                     )
@@ -465,6 +540,7 @@ public class StateTeleOp extends LinearOpMode {
             timer2 = new ElapsedTime();
             timer1 = new ElapsedTime();
             timer3 = new ElapsedTime();
+            endgame = new ElapsedTime();
             while (opModeIsActive()) {
                 // Put loop blocks here.
                 // driving blocks
@@ -480,6 +556,26 @@ public class StateTeleOp extends LinearOpMode {
                     drivespeed = 0.4;
                 }
 
+
+                if (gamepad2.left_bumper){
+                    redlights = true;
+                }
+                if (gamepad2.right_bumper){
+                    redlights = false;
+                }
+
+                if (endgame.time() <= 105 && redlights) {
+                    blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
+                }
+                else if(endgame.time() <= 105 && !redlights){
+                    blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
+                }
+                else if(endgame.time() <= 119){
+                    blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
+                }
+                else{
+                    blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.LAWN_GREEN);
+                }
 
 
                 RightFront.setPower((-headingpos + (forwardpos - horizontalpos)) * drivespeed);
@@ -511,8 +607,15 @@ public class StateTeleOp extends LinearOpMode {
                 if (gamepad1.start){
                     Actions.runBlocking(intake.inwristreset());
                 }
-
-
+                if (gamepad1.dpad_up){
+                    Actions.runBlocking(lift.hangup());
+                }
+                if (gamepad1.dpad_down){
+                    Actions.runBlocking(lift.hangdown());
+                }
+                if (gamepad1.dpad_right){
+                    Actions.runBlocking(lift.hangzero());
+                }
 
                 // return intake for transfer
                 if (gamepad1.back) {

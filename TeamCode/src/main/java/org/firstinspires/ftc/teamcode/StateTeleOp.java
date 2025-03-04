@@ -370,7 +370,7 @@ public class StateTeleOp extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
 
-                lasthangpos = 0;
+                lasthangpos = 1300;
 
                 LeftHang.setTargetPosition(lasthangpos);
                 RightHang.setTargetPosition(lasthangpos);
@@ -501,6 +501,7 @@ public class StateTeleOp extends LinearOpMode {
         boolean moveinarm;
         boolean moveintake;
         boolean redlights;
+        boolean hang;
         Intake intake = new Intake(hardwareMap);
         Outtake outtake = new Outtake(hardwareMap);
         Lift lift = new Lift(hardwareMap);
@@ -521,6 +522,7 @@ public class StateTeleOp extends LinearOpMode {
         liftdown = true;
         intakein = true;
         moveintake = false;
+        hang = false;
         ElapsedTime timer1;
         ElapsedTime timer2;
         ElapsedTime timer3;
@@ -563,8 +565,10 @@ public class StateTeleOp extends LinearOpMode {
                 if (gamepad2.right_bumper){
                     redlights = false;
                 }
-
-                if (endgame.time() <= 105 && redlights) {
+                if (hang){
+                    blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.LAWN_GREEN);
+                }
+                else if (endgame.time() <= 105 && redlights) {
                     blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
                 }
                 else if(endgame.time() <= 105 && !redlights){
@@ -612,6 +616,7 @@ public class StateTeleOp extends LinearOpMode {
                 }
                 if (gamepad1.dpad_down){
                     Actions.runBlocking(lift.hangdown());
+                    hang = true;
                 }
                 if (gamepad1.dpad_right){
                     Actions.runBlocking(lift.hangzero());

@@ -420,7 +420,7 @@ public class StateAuto extends LinearOpMode {
 
     public void runOpMode() {
         blinkin = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
-        Pose2d initialPose = new Pose2d(35, 61.5, Math.toRadians(180));
+        Pose2d initialPose = new Pose2d(28.5, 61.5, Math.toRadians(180));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
         Intake intake = new Intake(hardwareMap);
         Outtake outtake = new Outtake(hardwareMap);
@@ -435,6 +435,7 @@ public class StateAuto extends LinearOpMode {
         Action getblock4;
         Action block4turn;
         Action basket4;
+        Action park;
 
 
          basket1 = drive.actionBuilder(initialPose)
@@ -444,26 +445,32 @@ public class StateAuto extends LinearOpMode {
                  .strafeTo(new Vector2d(56,53.5))
                          .build();
          getblock2 = drive.actionBuilder(new Pose2d(56,53.5,Math.toRadians(225)))
-                 .strafeToLinearHeading(new Vector2d(42,52.25),Math.toRadians(285))
+                 .strafeToLinearHeading(new Vector2d(42,52.5),Math.toRadians(285))
                          .build();
-        basket2 = drive.actionBuilder(new Pose2d(42, 52.25, Math.toRadians(285)))
+        basket2 = drive.actionBuilder(new Pose2d(42, 52.5, Math.toRadians(285)))
                 .strafeToLinearHeading(new Vector2d(55.25,54.75), Math.toRadians(225))
                 .build();
 
         getblock3 = drive.actionBuilder(new Pose2d(55.25,54.75,Math.toRadians(225)))
-                .strafeToLinearHeading(new Vector2d(55.25, 51), Math.toRadians(271))
+                .strafeToLinearHeading(new Vector2d(55.25, 51.5), Math.toRadians(271))
                         .build();
 
-        basket3 = drive.actionBuilder(new Pose2d(55.25, 51, Math.toRadians(271)))
+        basket3 = drive.actionBuilder(new Pose2d(55.25, 51.5, Math.toRadians(271)))
                 .strafeToLinearHeading(new Vector2d(54, 54.5), Math.toRadians(225))
                         .build();
         getblock4 = drive.actionBuilder(new Pose2d(54,54.5, Math.toRadians(225)))
-                .strafeToLinearHeading(new Vector2d(47, 46), Math.toRadians(315))
+                .strafeToLinearHeading(new Vector2d(47, 46.75), Math.toRadians(315))
                         .build();
-        block4turn = drive.actionBuilder(new Pose2d(47,46, Math.toRadians(315)))
+        block4turn = drive.actionBuilder(new Pose2d(47,46.75, Math.toRadians(315)))
                 .strafeToLinearHeading(new Vector2d(45, 46), Math.toRadians(270))
                 .build();
 
+        basket4 = drive.actionBuilder(new Pose2d(45, 46, Math.toRadians(270)))
+                .strafeToLinearHeading(new Vector2d(54, 54.5), Math.toRadians(225))
+                .build();
+        park = drive.actionBuilder(new Pose2d(54, 54.5, Math.toRadians(225)))
+                .strafeToLinearHeading(new Vector2d(45, 46), Math.toRadians(225))
+                .build();
 
         //init actions
         Actions.runBlocking(
@@ -483,17 +490,22 @@ public class StateAuto extends LinearOpMode {
             Actions.runBlocking(
                     new SequentialAction(
                             intake.horizontalhalfextension(),
-
-                            basket1,
                             lift.liftup(),
-                            outtake.outarmup()
+                            outtake.outarmup(),
+                            basket1
+
+
 
                     )
             );
-            Actions.runBlocking(new SleepAction(1.5));
+            Actions.runBlocking(new SleepAction(0.5));
             Actions.runBlocking(new SequentialAction(
                     basket1depo,
-                    outtake.outclawretract(),
+                    outtake.outclawretract()
+            ));
+            Actions.runBlocking(new SleepAction(0.25));
+            Actions.runBlocking(new SequentialAction(
+
                     outtake.outarmdown(),
                     lift.liftdown(),
                     getblock2,
@@ -504,7 +516,7 @@ public class StateAuto extends LinearOpMode {
             Actions.runBlocking(new SequentialAction(
                     intake.inarmdown()
             ));
-            Actions.runBlocking(new SleepAction(0.5));
+            Actions.runBlocking(new SleepAction(0.25));
             Actions.runBlocking(new SequentialAction(
                     intake.inclawextend()
             ));
@@ -567,7 +579,7 @@ public class StateAuto extends LinearOpMode {
                     intake.inclawretract(),
                     intake.horizontalhalfextension()
             ));
-            Actions.runBlocking(new SleepAction(1));
+            Actions.runBlocking(new SleepAction(0.25));
             Actions.runBlocking(new SequentialAction(
                     lift.liftup(),
                     outtake.outarmup(),
@@ -575,7 +587,7 @@ public class StateAuto extends LinearOpMode {
                     intake.inarmup(),
                     intake.wristmove()
             ));
-            Actions.runBlocking(new SleepAction(2));
+            Actions.runBlocking(new SleepAction(1.5));
             Actions.runBlocking(new SequentialAction(
                     basket3,
                     outtake.outclawretract()
@@ -614,9 +626,24 @@ public class StateAuto extends LinearOpMode {
                     intake.inclawretract(),
                     intake.horizontalhalfextension()
             ));
-            Actions.runBlocking(new SleepAction(1));
-
-
+            Actions.runBlocking(new SleepAction(0.75));
+            Actions.runBlocking(new SequentialAction(
+                    lift.liftup(),
+                    outtake.outarmup(),
+                    intake.horizontalretraction(),
+                    intake.inarmup()
+            ));
+            Actions.runBlocking(new SleepAction(1.5));
+            Actions.runBlocking(new SequentialAction(
+                    basket4,
+                    outtake.outclawretract()
+            ));
+            Actions.runBlocking(new SleepAction(0.5));
+            Actions.runBlocking(new SequentialAction(
+                    park,
+                    outtake.outarmdown(),
+                    lift.liftdown()
+            ));
 
             sleep(30000);
 

@@ -272,7 +272,7 @@ public class StateAuto extends LinearOpMode {
         public class OutClawRetract implements Action{
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                outclaw.setPosition(0.45);
+                outclaw.setPosition(0.55);
                 return false;
             }
 

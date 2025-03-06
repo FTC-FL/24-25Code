@@ -175,7 +175,7 @@ public class StateTeleOp extends LinearOpMode {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (inwristpos < 0.71 ){
-                inwristpos = inwristpos + 0.05;
+                inwristpos = inwristpos + 0.0015;
                 inwrist.setPosition(inwristpos);
             }
 
@@ -192,7 +192,7 @@ public class StateTeleOp extends LinearOpMode {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (inwristpos > 0.03 ){
-                inwristpos = inwristpos - 0.05;
+                inwristpos = inwristpos - 0.0015;
                 inwrist.setPosition(inwristpos);
             }
 
@@ -257,7 +257,7 @@ public class StateTeleOp extends LinearOpMode {
         public class OutClawRetract implements Action{
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                outclaw.setPosition(0.45);
+                outclaw.setPosition(0.55);
                 return false;
             }
 
@@ -449,29 +449,29 @@ public class StateTeleOp extends LinearOpMode {
             return new LiftReset();
         }
 
-        public class LiftCurrent implements Action{
-
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-
-                leftliftcurrent = Leftlift.getCurrent(CurrentUnit.AMPS);
-                rightliftcurrent = Rightlift.getCurrent(CurrentUnit.AMPS);
-                telemetry.addData("Leftliftcurrent", leftliftcurrent);
-                telemetry.addData("Rightliftcurrent", rightliftcurrent);
-                telemetry.addData("TargetPos", lastliftpos);
-                telemetry.addData("LeftCurrPos", Leftlift.getCurrentPosition());
-                telemetry.addData("RightCurrPos", Rightlift.getCurrentPosition());
-                telemetry.addData("LeftMotorpower", Leftlift.getController().getMotorPower(0));
-                telemetry.addData("RightMotorpower", Rightlift.getController().getMotorPower(1));
-                telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-                return false;
-            }
-
-        }
-        public Action liftcurrent(){
-            return new LiftCurrent();
-        }
+//        public class LiftCurrent implements Action{
+//
+//
+//            @Override
+//            public boolean run(@NonNull TelemetryPacket packet) {
+//
+//                leftliftcurrent = Leftlift.getCurrent(CurrentUnit.AMPS);
+//                rightliftcurrent = Rightlift.getCurrent(CurrentUnit.AMPS);
+//                telemetry.addData("Leftliftcurrent", leftliftcurrent);
+//                telemetry.addData("Rightliftcurrent", rightliftcurrent);
+//                telemetry.addData("TargetPos", lastliftpos);
+//                telemetry.addData("LeftCurrPos", Leftlift.getCurrentPosition());
+//                telemetry.addData("RightCurrPos", Rightlift.getCurrentPosition());
+//                telemetry.addData("LeftMotorpower", Leftlift.getController().getMotorPower(0));
+//                telemetry.addData("RightMotorpower", Rightlift.getController().getMotorPower(1));
+//                telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+//                return false;
+//            }
+//
+//        }
+//        public Action liftcurrent(){
+//            return new LiftCurrent();
+//        }
 
 
 
@@ -526,8 +526,8 @@ public class StateTeleOp extends LinearOpMode {
         ElapsedTime timer1;
         ElapsedTime timer2;
         ElapsedTime timer3;
-        ElapsedTime timecheck;
-        ElapsedTime endgame;
+//        ElapsedTime timecheck;
+//        ElapsedTime endgame;
         waitForStart();
         if (opModeIsActive()) {
             // Put run blocks here.
@@ -542,15 +542,15 @@ public class StateTeleOp extends LinearOpMode {
             timer2 = new ElapsedTime();
             timer1 = new ElapsedTime();
             timer3 = new ElapsedTime();
-            endgame = new ElapsedTime();
+//            endgame = new ElapsedTime();
             while (opModeIsActive()) {
                 // Put loop blocks here.
                 // driving blocks
-                timecheck = new ElapsedTime();
+//                timecheck = new ElapsedTime();
                 forwardpos = gamepad1.left_stick_y;
                 horizontalpos = -gamepad1.left_stick_x;
                 headingpos = -gamepad1.right_stick_x;
-                Actions.runBlocking(new SequentialAction(lift.liftcurrent()));
+//                Actions.runBlocking(new SequentialAction(lift.liftcurrent()));
 
                 if (intakein){
                     drivespeed = 0.6;
@@ -559,27 +559,27 @@ public class StateTeleOp extends LinearOpMode {
                 }
 
 
-                if (gamepad2.left_bumper){
-                    redlights = true;
-                }
-                if (gamepad2.right_bumper){
-                    redlights = false;
-                }
-                if (hang){
+//                if (gamepad2.left_bumper){
+//                    redlights = true;
+//                }
+//                if (gamepad2.right_bumper){
+//                    redlights = false;
+//                }
+//                if (hang){
                     blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.LAWN_GREEN);
-                }
-                else if (endgame.time() <= 105 && redlights) {
-                    blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
-                }
-                else if(endgame.time() <= 105 && !redlights){
-                    blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
-                }
-                else if(endgame.time() <= 119){
-                    blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
-                }
-                else{
-                    blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.LAWN_GREEN);
-                }
+//                }
+//                else if (endgame.time() <= 105 && redlights) {
+//                    blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
+//                }
+//                else if(endgame.time() <= 105 && !redlights){
+//                    blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
+//                }
+//                else if(endgame.time() <= 119){
+//                    blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
+//                }
+//                else{
+//                    blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.LAWN_GREEN);
+//                }
 
 
                 RightFront.setPower((-headingpos + (forwardpos - horizontalpos)) * drivespeed);
@@ -629,7 +629,7 @@ public class StateTeleOp extends LinearOpMode {
                             new SequentialAction(
                                     intake.inarmback(),
                                     intake.inwristzero()));
-                    timer1 = new ElapsedTime();
+                    timer1.reset();
                     moveinarm = true;
 
                 }
@@ -651,7 +651,7 @@ public class StateTeleOp extends LinearOpMode {
                 // raise and lower lift
                 if (gamepad2.dpad_up) {
                     Actions.runBlocking(new SequentialAction(lift.liftup()));
-                    timer2 = new ElapsedTime();
+                    timer2.reset();
                     moveoutarmup = true;
                 }
                 if (timer2.time() > 0.2 && moveoutarmup) {
@@ -680,7 +680,7 @@ public class StateTeleOp extends LinearOpMode {
 
 
                     Actions.runBlocking(new SequentialAction(outtake.outclawextend(),intake.inclawretract()));
-
+                    timer3.reset();
                     moveintake = true;
 
                 }
@@ -693,8 +693,8 @@ public class StateTeleOp extends LinearOpMode {
                     Actions.runBlocking(outtake.outclawretract());
                 }
 
-                telemetry.addData("looptime", timecheck.time());
-                timecheck.reset();
+//                telemetry.addData("looptime", timecheck.time());
+//                timecheck.reset();
 
 
                 telemetry.update();

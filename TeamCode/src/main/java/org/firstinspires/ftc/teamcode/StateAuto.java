@@ -102,7 +102,7 @@ public class StateAuto extends LinearOpMode {
     public class InArmUp implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            inarm.setPosition(inarmdownpos - 0.02);
+            inarm.setPosition(inarmdownpos - 0.03);
             inbelt.setPosition(0.93);
             return false;
         }
@@ -114,7 +114,7 @@ public class StateAuto extends LinearOpMode {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             inarm.setPosition(inarmdownpos - 0.165);
-            inbelt.setPosition(0.25);
+            inbelt.setPosition(0.2);
             return false;
         }
     }
@@ -445,27 +445,27 @@ public class StateAuto extends LinearOpMode {
                  .strafeTo(new Vector2d(56,53.5))
                          .build();
          getblock2 = drive.actionBuilder(new Pose2d(56,53.5,Math.toRadians(225)))
-                 .strafeToLinearHeading(new Vector2d(42,52.5),Math.toRadians(285))
+                 .strafeToLinearHeading(new Vector2d(41.75,51.5),Math.toRadians(285))
                          .build();
-        basket2 = drive.actionBuilder(new Pose2d(42, 52.5, Math.toRadians(285)))
+        basket2 = drive.actionBuilder(new Pose2d(41.75, 51.5, Math.toRadians(285)))
                 .strafeToLinearHeading(new Vector2d(55.25,54.75), Math.toRadians(225))
                 .build();
 
         getblock3 = drive.actionBuilder(new Pose2d(55.25,54.75,Math.toRadians(225)))
-                .strafeToLinearHeading(new Vector2d(55.25, 51.5), Math.toRadians(271))
+                .strafeToLinearHeading(new Vector2d(55.25, 50.5), Math.toRadians(271))
                         .build();
 
-        basket3 = drive.actionBuilder(new Pose2d(55.25, 51.5, Math.toRadians(271)))
+        basket3 = drive.actionBuilder(new Pose2d(55.25, 50.5, Math.toRadians(271)))
                 .strafeToLinearHeading(new Vector2d(54, 54.5), Math.toRadians(225))
                         .build();
         getblock4 = drive.actionBuilder(new Pose2d(54,54.5, Math.toRadians(225)))
-                .strafeToLinearHeading(new Vector2d(47, 46.75), Math.toRadians(315))
+                .strafeToLinearHeading(new Vector2d(47, 46), Math.toRadians(315))
                         .build();
-        block4turn = drive.actionBuilder(new Pose2d(47,46.75, Math.toRadians(315)))
-                .strafeToLinearHeading(new Vector2d(45, 46), Math.toRadians(270))
+        block4turn = drive.actionBuilder(new Pose2d(47,46, Math.toRadians(315)))
+                .strafeToLinearHeading(new Vector2d(45, 46.01), Math.toRadians(270))
                 .build();
 
-        basket4 = drive.actionBuilder(new Pose2d(45, 46, Math.toRadians(270)))
+        basket4 = drive.actionBuilder(new Pose2d(45, 46.01, Math.toRadians(270)))
                 .strafeToLinearHeading(new Vector2d(54, 54.5), Math.toRadians(225))
                 .build();
         park = drive.actionBuilder(new Pose2d(54, 54.5, Math.toRadians(225)))

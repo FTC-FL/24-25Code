@@ -104,7 +104,7 @@ public class StateTeleOp extends LinearOpMode {
     public class InArmUp implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            inarm.setPosition(inarmdownpos - 0.02);
+            inarm.setPosition(inarmdownpos - 0.04);
             inbelt.setPosition(0.93);
             return false;
         }
@@ -116,7 +116,7 @@ public class StateTeleOp extends LinearOpMode {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             inarm.setPosition(inarmdownpos - 0.165);
-            inbelt.setPosition(0.25);
+            inbelt.setPosition(0.2);
             return false;
         }
     }
@@ -633,7 +633,7 @@ public class StateTeleOp extends LinearOpMode {
                     moveinarm = true;
 
                 }
-                if (timer1.time() > 0.85 && moveinarm) {
+                if (timer1.time() > 0.75 && moveinarm) {
                     Actions.runBlocking(new SequentialAction(intake.horizontalretraction()));
                     moveinarm = false;
                 }
